@@ -1,0 +1,6 @@
+int    inta
+float
+print
+nome
+intnome
+int nome
