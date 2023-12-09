@@ -20,7 +20,10 @@ class TestToken {
 	void testErroriNumbers() throws FileNotFoundException, LexicalException {
 		scanner = new Scanner("src/test/data/testScanner/erroriNumbers.txt");
 		
-		scanner.nextToken();
+		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("TYINT, riga: 1", scanner.nextToken().toString());
+		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
 	}
 	
 	@Test
@@ -34,7 +37,7 @@ class TestToken {
 	void testFLOAT() throws FileNotFoundException, LexicalException {
 		scanner = new Scanner("src/test/data/testScanner/testFLOAT.txt");
 		
-		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken()); //qui dovrebbe sollevare un'eccezione
+		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
 		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
 		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
 		

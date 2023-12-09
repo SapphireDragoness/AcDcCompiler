@@ -185,17 +185,17 @@ public class Scanner {
 	 * @throws LexicalException se il numero è in formato non corretto
 	 */
 	private Token scanNumber() throws IOException, LexicalException {
-		ArrayList<String> number = new ArrayList<String>();
+		StringBuilder number = new StringBuilder();
 		char c;
 
-		while (numbers.contains(peekChar())|| peekChar() == '.') {
+		while (numbers.contains(peekChar()) || peekChar() == '.') {
 			c = readChar();
-			number.add(Character.toString(c));
+			number.append(c);
 		}
-		if (String.join("", number).matches("[0-9]+.([0-9]{1,5})")) {
-			return new Token(TokenType.FLOAT, riga, String.join("", number));
-		} else if(String.join("", number).matches("0|[1-9]([0-9]*)")) {
-			return new Token(TokenType.INT, riga, String.join("", number));
+		if (number.toString().matches("(0|[1-9]+).([0-9]{1,5})")) {
+			return new Token(TokenType.FLOAT, riga, number.toString());
+		} else if(number.toString().matches("0|[1-9]([0-9]*)")) {
+			return new Token(TokenType.INT, riga, number.toString());
 		}
 		else 
 			throw new LexicalException("Numero non parsificabile alla riga " + riga);
