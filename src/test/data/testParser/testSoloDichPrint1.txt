@@ -1,0 +1,3 @@
+
+float numberfloat;
+int floati;

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import token.*;
 
 public class Scanner {
+	
 	final char EOF = (char) -1;
 	private int riga;
 	private PushbackReader buffer;
@@ -130,17 +131,19 @@ public class Scanner {
 		// il Token associato Parola Chiave (per generare i Token per le
 		// parole chiave usate l'HaskMap di corrispondenza
 		if (letters.contains(nextChar)) {
-			try {
-				return scanId();
-			} catch (IOException e) {
-				throw new LexicalException("Impossibile leggere carattere.");
-			}
+			return scanId();
 		}
 
 		// Se nextChar e' o in operators oppure
 		// ritorna il Token associato con l'operatore o il delimitatore
 		if (charTypeMap.containsKey((Object)nextChar)) {
-			return new Token(charTypeMap.get(nextChar), riga);
+			char c;
+			try {
+				c = readChar();
+			} catch (IOException e) {
+				throw new LexicalException("Impossibile leggere carattere.");
+			}
+			return new Token(charTypeMap.get(c), riga);
 		}
 
 		// Se nextChar e' in numbers
@@ -149,11 +152,7 @@ public class Scanner {
 		// i caratteri che leggete devono essere accumulati in una stringa
 		// che verra' assegnata al campo valore del Token
 		if (numbers.contains(nextChar)) {
-			try {
-				return scanNumber();
-			} catch (IOException e) {
-				throw new LexicalException("Impossibile leggere carattere.");
-			}
+			return scanNumber();
 		}
 
 		// Altrimenti il carattere NON E' UN CARATTERE LEGALE sollevate una
@@ -184,15 +183,19 @@ public class Scanner {
 	 * @throws IOException se non è possibile leggere lo stream
 	 * @throws LexicalException se il numero è in formato non corretto
 	 */
-	private Token scanNumber() throws IOException, LexicalException {
+	private Token scanNumber() throws LexicalException {
 		StringBuilder number = new StringBuilder();
 		char c;
 
-		while (numbers.contains(peekChar()) || peekChar() == '.') {
-			c = readChar();
-			number.append(c);
+		try {
+			while (numbers.contains(peekChar()) || peekChar() == '.') {
+				c = readChar();
+				number.append(c);
+			}
+		} catch (IOException e) {
+			throw new LexicalException("Errore di IO alla riga " + riga);
 		}
-		if (number.toString().matches("(0|[1-9]+).([0-9]{1,5})")) {
+		if (number.toString().matches("(0|[1-9]+).([0-9]{1,5})?")) {
 			return new Token(TokenType.FLOAT, riga, number.toString());
 		} else if(number.toString().matches("0|[1-9]([0-9]*)")) {
 			return new Token(TokenType.INT, riga, number.toString());
@@ -208,13 +211,17 @@ public class Scanner {
 	 * @throws IOException se non è possibile leggere dallo stream
 	 * @throws LexicalException se l'id è in formato non corretto
 	 */
-	private Token scanId() throws IOException, LexicalException {
+	private Token scanId() throws LexicalException {
 		StringBuilder id = new StringBuilder();
 		char c;
 
-		while (letters.contains(peekChar())) {
-			c = readChar();
-			id.append(c);
+		try {
+			while (letters.contains(peekChar())) {
+				c = readChar();
+				id.append(c);
+			}
+		} catch (IOException e) {
+			throw new LexicalException("Errore di IO alla riga " + riga);
 		}
 		if (keywordsMap.containsKey(id.toString())) {
 			for(String kw : keywordsMap.keySet()) {
@@ -223,7 +230,7 @@ public class Scanner {
 				}
 			}
 		}
-		return new Token(TokenType.ID, riga);
+		return new Token(TokenType.ID, riga, id.toString());
 	}
 
 	/**
@@ -247,4 +254,5 @@ public class Scanner {
 		buffer.unread(c);
 		return c;
 	}
+	
 }

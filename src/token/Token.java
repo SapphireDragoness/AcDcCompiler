@@ -30,7 +30,7 @@ public class Token {
 	}
 
 	public String toString() {
-		if(getTipo() == TokenType.INT || getTipo() == TokenType.FLOAT) {
+		if(getTipo() == TokenType.INT || getTipo() == TokenType.FLOAT || getTipo() == TokenType.ID) {
 			return getTipo().toString() + ", riga: " + getRiga() + ", " + getVal();
 		}
 		return getTipo().toString() + ", riga: " + getRiga();

@@ -1,0 +1,11 @@
+float num;
+int id = 99/2;
+num = 5;
+num = id;
+num *= id + 5.0;
+id /= 5;
+num = id * id;
+id += 5 - 8 * 6.0 / 2;
+num = id * 5 - 8.0 * 6 + 2;
+print num;
+print id;
