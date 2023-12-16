@@ -10,6 +10,11 @@ import java.util.HashSet;
 
 import token.*;
 
+/**
+ * Questa classe implementa uno scanner che legge un file carattere per carattere e restituisce dei token rappresentanti quei caratteri.
+ * 
+ * @author Linda Monfermoso, 20028464
+ */
 public class Scanner {
 	
 	final char EOF = (char) -1;
@@ -17,25 +22,18 @@ public class Scanner {
 	private PushbackReader buffer;
 	private Token current;
 
+	/* insieme di caratteri non considerati dallo scanner */
 	public HashSet<Character> skipChars;
+	/* insieme di lettere dell'alfabeto */
 	public HashSet<Character> letters;
+	/* insieme di numeri */
 	public HashSet<Character> numbers;
 
+	/* insieme dei caratteri '+', '-', '*', '/', ';', '=', ';' */
 	public HashMap<Character, TokenType> charTypeMap;
+	/* insieme delle parole chiave "print", "float", "int" */
 	public HashMap<String, TokenType> keywordsMap;
 	
-	public ArrayList<Token> tokenList;
-
-	// skpChars: insieme caratteri di skip (include EOF) e inizializzazione
-	// letters: insieme lettere e inizializzazione
-	// digits: cifre e inizializzazione
-
-	// char_type_Map: mapping fra caratteri '+', '-', '*', '/', ';', '=', ';' e il
-	// TokenType corrispondente
-
-	// keyWordsMap: mapping fra le stringhe "print", "float", "int" e il
-	// TokenType corrispondente
-
 	public Scanner(String fileName) throws FileNotFoundException {
 		this.buffer = new PushbackReader(new FileReader(fileName));
 		this.riga = 1;
@@ -79,9 +77,6 @@ public class Scanner {
 		keywordsMap.put("print", TokenType.PRINT);
 		keywordsMap.put("float", TokenType.TYFLOAT);
 		keywordsMap.put("int", TokenType.TYINT);
-		
-		/* Inizializza la lista dei token */
-		tokenList = new ArrayList<Token>();
 	}
 	
 	/**
@@ -97,17 +92,12 @@ public class Scanner {
 			return t;
 		}
 		char nextChar;
-		// nextChar contiene il prossimo carattere dell'input (non consumato).
-		try {
-			nextChar = peekChar();
-		} catch (IOException e) {
-			throw new LexicalException("Impossibile leggere carattere.");
-		} // Catturate l'eccezione IOException e
-			// ritornate una LexicalException che la contiene
+		nextChar = peekChar();
 
-		// Avanza nel buffer leggendo i carattere in skipChars
-		// incrementando riga se leggi '\n'.
-		// Se raggiungi la fine del file ritorna il Token EOF
+		/*
+		 * Avanza nel buffer leggendo i carattere in skipChars incrementando riga se
+		 * leggi '\n'. Se raggiungi la fine del file ritorna il Token EOF
+		 */
 		if (skipChars.contains(nextChar)) {
 			while(skipChars.contains(nextChar)) {
 				if (nextChar == EOF) {
@@ -129,7 +119,7 @@ public class Scanner {
 		// return scanId()
 		// che legge tutte le lettere minuscole e ritorna un Token ID o
 		// il Token associato Parola Chiave (per generare i Token per le
-		// parole chiave usate l'HaskMap di corrispondenza
+		// parole chiave usate l'HashMap di corrispondenza
 		if (letters.contains(nextChar)) {
 			return scanId();
 		}
@@ -195,9 +185,9 @@ public class Scanner {
 		} catch (IOException e) {
 			throw new LexicalException("Errore di IO alla riga " + riga);
 		}
-		if (number.toString().matches("(0|[1-9]+).([0-9]{1,5})?")) {
+		if (number.toString().matches("(0|[1-9]+).([0-9]{0,5})") && (skipChars.contains(peekChar()) || peekChar() == ';')) {
 			return new Token(TokenType.FLOAT, riga, number.toString());
-		} else if(number.toString().matches("0|[1-9]([0-9]*)")) {
+		} else if(number.toString().matches("0|[1-9]([0-9]*)") && (skipChars.contains(peekChar()) || peekChar() == ';')) {
 			return new Token(TokenType.INT, riga, number.toString());
 		}
 		else 
@@ -247,11 +237,21 @@ public class Scanner {
 	 * Legge un carattere dallo stream senza consumarlo.
 	 * 
 	 * @return il carattere letto
+	 * @throws LexicalException 
 	 * @throws IOException se non è possibile leggere dallo stream
 	 */
-	private char peekChar() throws IOException {
-		char c = (char) buffer.read();
-		buffer.unread(c);
+	private char peekChar() throws LexicalException {
+		char c = 0;
+		try {
+			c = (char) buffer.read();
+		} catch (IOException e) {
+			throw new LexicalException("Impossibile leggere carattere.");
+		}
+		try {
+			buffer.unread(c);
+		} catch (IOException e) {
+			throw new LexicalException("Impossibile leggere carattere.");
+		}
 		return c;
 	}
 	

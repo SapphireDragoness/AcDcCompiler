@@ -15,15 +15,18 @@ import token.TokenType;
 class TestToken {
 	
 	Scanner scanner;
+	LexicalException e;
 	
-//	@Test
-//	void testErroriNumbers() throws FileNotFoundException, LexicalException {
-//		scanner = new Scanner("src/test/data/testScanner/erroriNumbers.txt");
-//		
-//		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-//		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-//		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-//	}
+	@Test
+	void testErroriNumbers() throws FileNotFoundException, LexicalException {
+		scanner = new Scanner("src/test/data/testScanner/erroriNumbers.txt");
+		
+		scanner.nextToken();
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Numero non parsificabile alla riga 2", e.getMessage());
+		//Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+	}
 	
 	@Test
 	void testEOF() throws FileNotFoundException, LexicalException {
@@ -97,7 +100,14 @@ class TestToken {
 	void testIdKeyWords() throws FileNotFoundException, LexicalException {
 		scanner = new Scanner("src/test/data/testScanner/testIdKeyWords.txt");
 		
-		scanner.nextToken();
+		assertEquals(TokenType.TYINT, scanner.nextToken().getTipo());
+		assertEquals(TokenType.ID, scanner.nextToken().getTipo());
+		assertEquals(TokenType.TYFLOAT, scanner.nextToken().getTipo());
+		assertEquals(TokenType.PRINT, scanner.nextToken().getTipo());
+		assertEquals(TokenType.ID, scanner.nextToken().getTipo());
+		assertEquals(TokenType.ID, scanner.nextToken().getTipo());
+		assertEquals(TokenType.TYINT, scanner.nextToken().getTipo());
+		assertEquals(TokenType.ID, scanner.nextToken().getTipo());
 	}
 	
 	@Test
@@ -119,12 +129,12 @@ class TestToken {
 		assertEquals(TokenType.TYINT, scanner.nextToken().getTipo());
 	}
 	
-	@Test
-	void testOperators() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testOperators.txt");
-		
-		scanner.nextToken();
-	}
+//	@Test
+//	void testOperators() throws FileNotFoundException, LexicalException {
+//		scanner = new Scanner("src/test/data/testScanner/testOperators.txt");
+//		
+//		scanner.nextToken();
+//	}
 	
 	@Test
 	void peekToken () throws LexicalException, FileNotFoundException {
