@@ -18,25 +18,25 @@ class TestParser {
 	Scanner scanner;
 	SyntacticException e;
 
-//	@Test
-//	void testParserCorretto1() throws FileNotFoundException, SyntacticException {
-//		scanner = new Scanner("src/test/data/testParser/testParserCorretto1.txt");
-//		parser = new Parser(scanner);
-//		
-//		Assertions.assertDoesNotThrow(() ->
-//			parser.parse()
-//		);	
-//	}
-//	
-//	@Test
-//	void testParserCorretto2() throws FileNotFoundException, SyntacticException {
-//		scanner = new Scanner("src/test/data/testParser/testParserCorretto2.txt");
-//		parser = new Parser(scanner);
-//		
-//		Assertions.assertDoesNotThrow(() ->
-//			parser.parse()
-//		);
-//	}
+	@Test
+	void testParserCorretto1() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner("src/test/data/testParser/testParserCorretto1.txt");
+		parser = new Parser(scanner);
+		
+		Assertions.assertDoesNotThrow(() ->
+			parser.parse()
+		);	
+	}
+	
+	@Test
+	void testParserCorretto2() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner("src/test/data/testParser/testParserCorretto2.txt");
+		parser = new Parser(scanner);
+		
+		Assertions.assertDoesNotThrow(() ->
+			parser.parse()
+		);
+	}
 	
 	@Test
 	void testParserEcc0() throws FileNotFoundException, SyntacticException {

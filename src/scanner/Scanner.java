@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PushbackReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -101,17 +100,13 @@ public class Scanner {
 		if (skipChars.contains(nextChar)) {
 			while(skipChars.contains(nextChar)) {
 				if (nextChar == EOF) {
-					return new Token(TokenType.EOF, riga);
+					return new Token(TokenType.EOF, riga, "EOF");
 				}
 				if (nextChar == '\n') {
 					riga++;
 				}
-				try {
-					readChar();
-					nextChar = peekChar();
-				} catch (IOException e) {
-					throw new LexicalException("Impossibile leggere carattere.");
-				}
+				readChar();
+				nextChar = peekChar();
 			}
 		}
 
@@ -127,13 +122,7 @@ public class Scanner {
 		// Se nextChar e' o in operators oppure
 		// ritorna il Token associato con l'operatore o il delimitatore
 		if (charTypeMap.containsKey((Object)nextChar)) {
-			char c;
-			try {
-				c = readChar();
-			} catch (IOException e) {
-				throw new LexicalException("Impossibile leggere carattere.");
-			}
-			return new Token(charTypeMap.get(c), riga);
+			return scanOperators();
 		}
 
 		// Se nextChar e' in numbers
@@ -177,13 +166,9 @@ public class Scanner {
 		StringBuilder number = new StringBuilder();
 		char c;
 
-		try {
-			while (numbers.contains(peekChar()) || peekChar() == '.') {
-				c = readChar();
-				number.append(c);
-			}
-		} catch (IOException e) {
-			throw new LexicalException("Errore di IO alla riga " + riga);
+		while (numbers.contains(peekChar()) || peekChar() == '.') {
+			c = readChar();
+			number.append(c);
 		}
 		if (number.toString().matches("(0|[1-9]+).([0-9]{0,5})") && (skipChars.contains(peekChar()) || peekChar() == ';')) {
 			return new Token(TokenType.FLOAT, riga, number.toString());
@@ -198,20 +183,15 @@ public class Scanner {
 	 * Scandisce un id costruendo una stringa e ritornando il token corrispondente.
 	 * 
 	 * @return il token corrispondente
-	 * @throws IOException se non è possibile leggere dallo stream
 	 * @throws LexicalException se l'id è in formato non corretto
 	 */
 	private Token scanId() throws LexicalException {
 		StringBuilder id = new StringBuilder();
 		char c;
 
-		try {
-			while (letters.contains(peekChar())) {
-				c = readChar();
-				id.append(c);
-			}
-		} catch (IOException e) {
-			throw new LexicalException("Errore di IO alla riga " + riga);
+		while (letters.contains(peekChar())) {
+			c = readChar();
+			id.append(c);
 		}
 		if (keywordsMap.containsKey(id.toString())) {
 			for(String kw : keywordsMap.keySet()) {
@@ -222,15 +202,37 @@ public class Scanner {
 		}
 		return new Token(TokenType.ID, riga, id.toString());
 	}
+	
+	/**
+	 * Scandisce operatore ritornando il token corrispondente.
+	 * 
+	 * @return il token corrispondente
+	 * @throws LexicalException se il token è in formato non corretto
+	 */
+	private Token scanOperators() throws LexicalException {
+		char c;
+		c = readChar();
+		if(charTypeMap.containsKey(peekChar())) {
+			StringBuilder op = new StringBuilder();
+			op.append(c);
+			op.append(readChar());
+			return new Token(TokenType.OP_ASSIGN, riga, op.toString());
+		}
+		return new Token(charTypeMap.get(c), riga, Character.toString(c));
+	}
 
 	/**
 	 * Legge un carattere dallo stream consumandolo.
 	 * 
 	 * @return il carattere letto 
-	 * @throws IOException se non è possibile leggere dallo stream
+	 * @throws LexicalException se non è possibile leggere dallo stream
 	 */
-	private char readChar() throws IOException {
-		return ((char) this.buffer.read());
+	private char readChar() throws LexicalException {
+		try {
+			return ((char) this.buffer.read());
+		} catch (IOException e) {
+			throw new LexicalException("Impossibile leggere carattere.");
+		}
 	}
 
 	/**

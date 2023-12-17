@@ -29,8 +29,9 @@ public class Token {
 		return val;
 	}
 
+	@Override
 	public String toString() {
-		if(getTipo() == TokenType.INT || getTipo() == TokenType.FLOAT || getTipo() == TokenType.ID) {
+		if(getTipo() == TokenType.INT || getTipo() == TokenType.FLOAT || getTipo() == TokenType.ID || getTipo() == TokenType.OP_ASSIGN) {
 			return getTipo().toString() + ", riga: " + getRiga() + ", " + getVal();
 		}
 		return getTipo().toString() + ", riga: " + getRiga();
