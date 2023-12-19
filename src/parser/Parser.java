@@ -1,5 +1,15 @@
 package parser;
 
+import java.util.ArrayList;
+
+import ast.LangType;
+import ast.NodeDecSt;
+import ast.NodeDecl;
+import ast.NodeExpr;
+import ast.NodeId;
+import ast.NodePrint;
+import ast.NodeProgram;
+import ast.NodeStm;
 import scanner.LexicalException;
 import scanner.Scanner;
 import token.Token;
@@ -19,23 +29,33 @@ public class Parser {
 		this.scanner = scanner;
 	}
 
-	public void parse() throws SyntacticException {
-		this.parsePrg();
+	public NodeProgram parse() throws SyntacticException {
+		return this.parsePrg();
 	}
 
-	private Token match(TokenType tipo) throws LexicalException, SyntacticException {
-		Token t = scanner.peekToken();
+	private Token match(TokenType tipo) throws SyntacticException {
+		Token t;
+		try {
+			t = scanner.peekToken();
+		} catch (LexicalException e) {
+			throw new SyntacticException(e.getMessage());
+		}
 
 		if (tipo.equals(t.getTipo())) {
-			return scanner.nextToken();
+			try {
+				return scanner.nextToken();
+			} catch (LexicalException e) {
+				throw new SyntacticException(e.getMessage());
+			}
 		} else {
 			throw new SyntacticException(
 					"Aspettavo " + tipo.toString() + " alla riga " + t.getRiga() + " ma è " + t.getTipo() + ".");
 		}
 	}
 
-	private void parsePrg() throws SyntacticException {
+	private NodeProgram parsePrg() throws SyntacticException {
 		Token t = null;
+		
 		try {
 			t = scanner.peekToken();
 		} catch (LexicalException e) {
@@ -45,13 +65,9 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Prg -> DSs $
 		case TYFLOAT, TYINT, ID, PRINT, EOF -> {
-			parseDSs();
-			try {
-				match(TokenType.EOF);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			return;
+			ArrayList<NodeDecSt> prg = parseDSs();
+			match(TokenType.EOF);
+			return new NodeProgram(prg);
 		}
 		default -> {
 			throw new SyntacticException(
@@ -60,7 +76,7 @@ public class Parser {
 		}
 	}
 
-	private void parseDSs() throws SyntacticException {
+	private ArrayList<NodeDecSt> parseDSs() throws SyntacticException {
 		Token t;
 
 		try {
@@ -72,17 +88,19 @@ public class Parser {
 		switch (t.getTipo()) {
 		// DSs -> Dcl DSs
 		case TYFLOAT, TYINT -> {
-			parseDcl();
-			parseDSs();
+			NodeDecl decl = parseDcl();
+			ArrayList<NodeDecSt> decSts = parseDSs();
+			return decSts;
 		}
 		// DSs -> Stm DSs
 		case ID, PRINT -> {
-			parseStm();
-			parseDSs();
+			NodeStm stm = parseStm();
+			ArrayList<NodeDecSt> decSts = parseDSs();
+			return decSts;
 		}
 		// DSs -> ϵ
 		case EOF -> {
-			return;
+			return new ArrayList<NodeDecSt>();
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -91,7 +109,7 @@ public class Parser {
 		}
 	}
 
-	private void parseDcl() throws SyntacticException {
+	private NodeDecl parseDcl() throws SyntacticException {
 		Token t;
 
 		try {
@@ -103,13 +121,10 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Dcl -> Ty id DclP
 		case TYFLOAT, TYINT -> {
-			parseTy();
-			try {
-				match(TokenType.ID);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			parseDclP();
+			LangType type = parseTy();
+			String id = match(TokenType.ID).getVal();
+			NodeExpr init = parseDclP();
+			return new NodeDecl(new NodeId(id), type, init);
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -130,20 +145,12 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Ty -> float
 		case TYFLOAT -> {
-			try {
-				match(TokenType.TYFLOAT);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.TYFLOAT);
 			return;
 		}
 		// Ty -> int
 		case TYINT -> {
-			try {
-				match(TokenType.TYINT);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.TYINT);
 			return;
 		}
 		default -> {
@@ -153,7 +160,7 @@ public class Parser {
 		}
 	}
 
-	private void parseDclP() throws SyntacticException {
+	private NodeExpr parseDclP() throws SyntacticException {
 		Token t;
 
 		try {
@@ -165,26 +172,15 @@ public class Parser {
 		switch (t.getTipo()) {
 		// DclP -> ;
 		case SEMI -> {
-			try {
-				match(TokenType.SEMI);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			return;
+			match(TokenType.SEMI);
+			return null;
 		}
 		// DclP -> opAssign Exp ;
 		case OP_ASSIGN -> {
-			try {
-				match(TokenType.OP_ASSIGN);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.OP_ASSIGN);
 			parseExp();
-			try {
-				match(TokenType.SEMI);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.SEMI);
+			return null;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -193,7 +189,7 @@ public class Parser {
 		}
 	}
 
-	private void parseStm() throws SyntacticException {
+	private NodeStm parseStm() throws SyntacticException {
 		Token t;
 
 		try {
@@ -205,41 +201,18 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Stm -> id opAssign Exp ;
 		case ID -> {
-			try {
-				match(TokenType.ID);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			try {
-				match(TokenType.OP_ASSIGN);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			parseExp();
-			try {
-				match(TokenType.SEMI);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.ID);
+			match(TokenType.OP_ASSIGN);
+			parseExp();	
+			match(TokenType.SEMI);
+			return null;
 		}
 		// Stm -> print id ;
 		case PRINT -> {
-			try {
-				match(TokenType.PRINT);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			try {
-				match(TokenType.ID);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			try {
-				match(TokenType.SEMI);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			return;
+			match(TokenType.PRINT);
+			match(TokenType.ID);
+			match(TokenType.SEMI);
+			return new NodePrint(id);
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -248,7 +221,7 @@ public class Parser {
 		}
 	}
 
-	private void parseExp() throws SyntacticException {
+	private NodeExpr parseExp() throws SyntacticException {
 		Token t;
 
 		try {
@@ -260,8 +233,9 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Exp -> Tr ExpP
 		case ID, FLOAT, INT -> {
-			parseTr();
-			parseExpP();
+			NodeExpr left = parseTr();
+			NodeExpr exp = parseExpP(left);
+			return null;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -270,7 +244,7 @@ public class Parser {
 		}
 	}
 
-	private void parseExpP() throws SyntacticException {
+	private NodeExpr parseExpP(NodeExpr left) throws SyntacticException {
 		Token t;
 
 		try {
@@ -282,27 +256,21 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Exp -> + Tr ExpP
 		case PLUS -> {
-			try {
-				match(TokenType.PLUS);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			parseTr();
-			parseExpP();
+			match(TokenType.PLUS);
+			NodeExpr exp1 = parseTr();
+			NodeExpr exp2 = parseExpP(exp1);
+			return null;
 		}
 		// Exp -> - Tr ExpP
 		case MINUS -> {
-			try {
-				match(TokenType.MINUS);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			parseTr();
-			parseExpP();
+			match(TokenType.MINUS);
+			NodeExpr exp1 = parseTr();
+			NodeExpr exp2 = parseExpP(exp1);
+			return null;
 		}
 		// Exp -> ϵ
 		case SEMI -> {
-			return;
+			return null;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -311,7 +279,7 @@ public class Parser {
 		}
 	}
 
-	private void parseTr() throws SyntacticException {
+	private NodeExpr parseTr() throws SyntacticException {
 		Token t;
 
 		try {
@@ -323,8 +291,9 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Tr -> Val TrP
 		case ID, FLOAT, INT -> {
-			parseVal();
-			parseTrP();
+			NodeExpr left = parseVal();
+			NodeExpr exp = parseTrP(left);
+			return null;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -333,7 +302,7 @@ public class Parser {
 		}
 	}
 
-	private void parseTrP() throws SyntacticException {
+	private NodeExpr parseTrP(NodeExpr left) throws SyntacticException {
 		Token t;
 
 		try {
@@ -345,27 +314,21 @@ public class Parser {
 		switch (t.getTipo()) {
 		// TrP -> * Val TrP
 		case TIMES -> {
-			try {
-				match(TokenType.TIMES);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
-			parseVal();
-			parseTrP();
+			match(TokenType.TIMES);
+			NodeExpr left = parseVal();
+			NodeExpr exp = parseTrP(left);
+			return null;
 		}
 		// TrP -> / Val TrP
 		case DIVIDE -> {
-			try {
-				match(TokenType.DIVIDE);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.DIVIDE);
 			parseVal();
 			parseTrP();
+			return null;
 		}
 		// TrP -> ϵ
 		case MINUS, PLUS, SEMI -> {
-			return;
+			return null;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -374,7 +337,7 @@ public class Parser {
 		}
 	}
 
-	private void parseVal() throws SyntacticException {
+	private NodeExpr parseVal() throws SyntacticException {
 		Token t;
 
 		try {
@@ -386,27 +349,18 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Val -> intVal
 		case INT -> {
-			try {
-				match(TokenType.INT);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.INT);
+			return null;
 		}
 		// Val -> floatVal
 		case FLOAT -> {
-			try {
-				match(TokenType.FLOAT);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.FLOAT);
+			return null;
 		}
 		// Val -> id
 		case ID -> {
-			try {
-				match(TokenType.ID);
-			} catch (LexicalException e) {
-				throw new SyntacticException(e.getMessage());
-			}
+			match(TokenType.ID);
+			return null;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()

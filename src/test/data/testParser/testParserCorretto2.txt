@@ -1,5 +1,5 @@
 float num;
-int id = 99/2;
+int id = 99 / 2;
 num = 5;
 num = id;
 num *= id + 5.0;
