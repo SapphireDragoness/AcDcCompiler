@@ -133,7 +133,7 @@ public class Parser {
 		}
 	}
 
-	private void parseTy() throws SyntacticException {
+	private LangType parseTy() throws SyntacticException {
 		Token t;
 
 		try {
@@ -146,12 +146,12 @@ public class Parser {
 		// Ty -> float
 		case TYFLOAT -> {
 			match(TokenType.TYFLOAT);
-			return;
+			return LangType.FLOAT;
 		}
 		// Ty -> int
 		case TYINT -> {
 			match(TokenType.TYINT);
-			return;
+			return LangType.INT;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -210,9 +210,9 @@ public class Parser {
 		// Stm -> print id ;
 		case PRINT -> {
 			match(TokenType.PRINT);
-			match(TokenType.ID);
+			String id = match(TokenType.ID).getVal();
 			match(TokenType.SEMI);
-			return new NodePrint(id);
+			return new NodePrint(new NodeId(id));
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -315,20 +315,20 @@ public class Parser {
 		// TrP -> * Val TrP
 		case TIMES -> {
 			match(TokenType.TIMES);
-			NodeExpr left = parseVal();
-			NodeExpr exp = parseTrP(left);
+			NodeExpr exp1 = parseVal();
+			NodeExpr exp2 = parseTrP(exp1);
 			return null;
 		}
 		// TrP -> / Val TrP
 		case DIVIDE -> {
 			match(TokenType.DIVIDE);
-			parseVal();
-			parseTrP();
+			NodeExpr exp1 = parseVal();
+			NodeExpr exp2 = parseTrP(exp1);
 			return null;
 		}
 		// TrP -> ϵ
 		case MINUS, PLUS, SEMI -> {
-			return null;
+			return left;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
