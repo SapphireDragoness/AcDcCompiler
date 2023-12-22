@@ -23,12 +23,12 @@ class TestToken {
 	void testErroriNumbers() throws FileNotFoundException, LexicalException {
 		scanner = new Scanner("src/test/data/testScanner/erroriNumbers.txt");
 
-		scanner.nextToken();
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Numero non parsificabile alla riga 2", e.getMessage());
-		// Assertions.assertThrows(LexicalException.class, () - scanner.nextToken());
+		assertEquals("FLOAT o INT non parsificabile alla riga 1, non corrisponde al regex.", e.getMessage());
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Numero non parsificabile alla riga 2", e.getMessage());
+		assertEquals("FLOAT o INT non parsificabile alla riga 2, non corrisponde al regex.", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("FLOAT o INT non parsificabile alla riga 3, non corrisponde al regex.", e.getMessage());
 	}
 
 	@Test
@@ -170,6 +170,18 @@ class TestToken {
 		assertEquals(t.getTipo(), TokenType.ID);
 		assertEquals(t.getRiga(), 1);
 		assertEquals(t.getVal(), "temp");
+	}
+	
+	@Test
+	void testErroriId() throws FileNotFoundException, LexicalException {
+		scanner = new Scanner("src/test/data/testScanner/erroriId.txt");
+
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("ID non parsificabile alla riga 1, non corrisponde al regex.", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("FLOAT o INT non parsificabile alla riga 2, non corrisponde al regex.", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("ID non parsificabile alla riga 3, non corrisponde al regex.", e.getMessage());
 	}
 
 }

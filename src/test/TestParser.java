@@ -14,13 +14,14 @@ import scanner.Scanner;
 
 class TestParser {
 	
+	String path = "src/test/data/testParser/";
 	Parser parser;
 	Scanner scanner;
 	SyntacticException e;
 
 	@Test
 	void testParserCorretto1() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserCorretto1.txt");
+		scanner = new Scanner(path + "testParserCorretto1.txt");
 		parser = new Parser(scanner);
 		
 		Assertions.assertDoesNotThrow(() ->
@@ -30,7 +31,7 @@ class TestParser {
 	
 	@Test
 	void testParserCorretto2() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserCorretto2.txt");
+		scanner = new Scanner(path + "testParserCorretto2.txt");
 		parser = new Parser(scanner);
 		
 		Assertions.assertDoesNotThrow(() ->
@@ -40,7 +41,7 @@ class TestParser {
 	
 	@Test
 	void testParserEcc0() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserEcc_0.txt");
+		scanner = new Scanner(path + "testParserEcc_0.txt");
 		parser = new Parser(scanner);
 		
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
@@ -49,7 +50,7 @@ class TestParser {
 	
 	@Test
 	void testParserEcc1() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserEcc_1.txt");
+		scanner = new Scanner(path + "testParserEcc_1.txt");
 		parser = new Parser(scanner);
 		
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
@@ -58,7 +59,7 @@ class TestParser {
 	
 	@Test
 	void testParserEcc2() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserEcc_2.txt");
+		scanner = new Scanner(path + "testParserEcc_2.txt");
 		parser = new Parser(scanner);
 		
 		
@@ -68,7 +69,7 @@ class TestParser {
 	
 	@Test
 	void testParserEcc3() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserEcc_3.txt");
+		scanner = new Scanner(path + "testParserEcc_3.txt");
 		parser = new Parser(scanner);
 		
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
@@ -77,7 +78,7 @@ class TestParser {
 	
 	@Test
 	void testParserEcc4() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserEcc_4.txt");
+		scanner = new Scanner(path + "testParserEcc_4.txt");
 		parser = new Parser(scanner);
 		
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
@@ -95,7 +96,7 @@ class TestParser {
 
 	@Test
 	void testParserEcc6() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserEcc_6.txt");
+		scanner = new Scanner(path + "testParserEcc_6.txt");
 		parser = new Parser(scanner);
 		
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
@@ -104,7 +105,7 @@ class TestParser {
 	
 	@Test
 	void testParserEcc7() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testParserEcc_7.txt");
+		scanner = new Scanner(path + "testParserEcc_7.txt");
 		parser = new Parser(scanner);
 		
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
@@ -113,7 +114,17 @@ class TestParser {
 	
 	@Test
 	void testSoloDichPrint1() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner("src/test/data/testParser/testSoloDichPrint1.txt");
+		scanner = new Scanner(path + "testSoloDichPrint1.txt");
+		parser = new Parser(scanner);
+		
+		Assertions.assertDoesNotThrow(() -> 
+			parser.parse()
+		);
+	}
+	
+	@Test
+	void testPrint() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner(path + "testPrint.txt");
 		parser = new Parser(scanner);
 		
 		Assertions.assertDoesNotThrow(() -> 

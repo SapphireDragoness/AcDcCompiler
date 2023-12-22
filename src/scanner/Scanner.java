@@ -166,17 +166,17 @@ public class Scanner {
 		StringBuilder number = new StringBuilder();
 		char c;
 
-		while (numbers.contains(peekChar()) || peekChar() == '.') {
+		while (!skipChars.contains(peekChar()) && peekChar() != ';') {
 			c = readChar();
 			number.append(c);
 		}
-		if (number.toString().matches("(0|[1-9]+).([0-9]{0,5})") && (skipChars.contains(peekChar()) || peekChar() == ';')) {
+		if (number.toString().matches("(0|[1-9]+)[.]([0-9]{0,5})")) {
 			return new Token(TokenType.FLOAT, riga, number.toString());
-		} else if(number.toString().matches("0|[1-9]([0-9]*)") && (skipChars.contains(peekChar()) || peekChar() == ';')) {
+		} else if(number.toString().matches("0|([1-9][0-9]*)")) {
 			return new Token(TokenType.INT, riga, number.toString());
 		}
 		else 
-			throw new LexicalException("Numero non parsificabile alla riga " + riga);
+			throw new LexicalException("FLOAT o INT non parsificabile alla riga " + riga + ", non corrisponde al regex.");
 	}
 
 	/**
@@ -189,9 +189,12 @@ public class Scanner {
 		StringBuilder id = new StringBuilder();
 		char c;
 
-		while (letters.contains(peekChar())) {
+		while (!skipChars.contains(peekChar()) && peekChar() != ';') {
 			c = readChar();
 			id.append(c);
+		}
+		if (!id.toString().matches("[a-z]+")) {
+			throw new LexicalException("ID non parsificabile alla riga " + riga + ", non corrisponde al regex.");
 		}
 		if (keywordsMap.containsKey(id.toString())) {
 			for(String kw : keywordsMap.keySet()) {
