@@ -41,11 +41,11 @@ class TestToken {
 	@Test
 	void testFLOAT() throws FileNotFoundException, LexicalException {
 		scanner = new Scanner("src/test/data/testScanner/testFLOAT.txt");
-
-		Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-
 		Token t = scanner.nextToken();
-		// un float senza cifre decimali è considerato comunque come FLOAT
+
+		assertEquals("098.8095", t.getVal());
+		assertEquals(TokenType.FLOAT, t.getTipo());
+		t = scanner.nextToken();
 		assertEquals("0.", t.getVal());
 		assertEquals(TokenType.FLOAT, t.getTipo());
 		t = scanner.nextToken();

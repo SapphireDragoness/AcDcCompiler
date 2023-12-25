@@ -170,7 +170,7 @@ public class Scanner {
 			c = readChar();
 			number.append(c);
 		}
-		if (number.toString().matches("(0|[1-9]+)[.]([0-9]{0,5})")) {
+		if (number.toString().matches("[0-9]+[.]([0-9]{0,5})")) {
 			return new Token(TokenType.FLOAT, riga, number.toString());
 		} else if(number.toString().matches("0|([1-9][0-9]*)")) {
 			return new Token(TokenType.INT, riga, number.toString());
