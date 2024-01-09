@@ -4,8 +4,12 @@ import visitor.IVisitor;
 
 public abstract class NodeAST {
 	
-	public abstract TypeDescriptor calcResType();
-	public abstract String calcCodice();
+	private TypeDescriptor resType;
+	
 	public abstract void accept(IVisitor visitor);
+
+	public TypeDescriptor getResType() {
+		return resType;
+	}
 	
 }

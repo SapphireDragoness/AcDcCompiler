@@ -20,18 +20,6 @@ public class NodeDeref extends NodeExpr {
 	}
 
 	@Override
-	public TypeDescriptor calcResType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String calcCodice() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void accept(IVisitor visitor) {
 		visitor.visit(this);
 	}

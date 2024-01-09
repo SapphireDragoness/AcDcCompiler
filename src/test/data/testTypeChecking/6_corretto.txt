@@ -1,0 +1,5 @@
+int a;
+a = 5;
+float b = 4;
+b = a - 3.2 / b;
+print b;

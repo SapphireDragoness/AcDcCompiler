@@ -1,6 +1,6 @@
 package visitor;
 
-import ast.NodeBinOp;
+import ast.*;
 
 public class TypeCheckingVisitor implements IVisitor {
 
@@ -11,9 +11,58 @@ public class TypeCheckingVisitor implements IVisitor {
 		TypeDescriptor leftTD = resType;
 		node.getRight().accept(this);
 		TypeDescriptor rightTD = resType;
+		
 		if ( ......... ) //controlli opportuni su leftTD e rightTD
 		......................
 		resType = ..... // assegna il TypeDescriptor appropriato
 	}
-	// I metodi visit per gli altri nodi concreti.......
+
+	@Override
+	public void visit(NodeProgram node) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(NodeAssign node) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(NodeCost node) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(NodeDecl node) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(NodeDeref node) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(NodeId node) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(NodePrint node) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(NodeConvert node) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

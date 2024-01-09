@@ -25,17 +25,6 @@ public class NodeCost extends NodeExpr {
 		return "NodeCost [getValue()=" + getValue() + ", getType()=" + getType() + "]";
 	}
 
-	@Override
-	public TypeDescriptor calcResType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String calcCodice() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void accept(IVisitor visitor) {

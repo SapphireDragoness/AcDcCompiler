@@ -1,0 +1,6 @@
+float a;
+
+print a;
+
+print b;
+

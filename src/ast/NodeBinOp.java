@@ -13,14 +13,6 @@ public class NodeBinOp extends NodeExpr {
 		this.left = left;
 		this.right = right;
 	}
-	
-	public TypeDescriptor calcResType() {
-		TypeDescriptor leftTD=left.calcResType; // descrittore di tipo della espressione sinistra
-		TypeDescriptor rightTD=right.calcResType; // descrittore di tipo della espressione destra
-		if ( ......... ) //controlli opportuni su leftTD e rightTD
-		..........
-		return;
-	}
 
 	public LangOper getOp() {
 		return op;
@@ -38,12 +30,6 @@ public class NodeBinOp extends NodeExpr {
 	public String toString() {
 		return getOp().toString() + getLeft().toString() + getRight().toString();
 		
-	}
-
-	@Override
-	public String calcCodice() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

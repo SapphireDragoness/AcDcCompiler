@@ -1,0 +1,6 @@
+
+int b = 3;
+
+float temp=b+0.1;
+
+temp = b + c ;
