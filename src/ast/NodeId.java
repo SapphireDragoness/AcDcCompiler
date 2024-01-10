@@ -13,10 +13,10 @@ public class NodeId extends NodeAST {
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public String toString() {
-		return getName();
+		return "NodeId [getName()=" + getName() + "]";
 	}
 
 	@Override

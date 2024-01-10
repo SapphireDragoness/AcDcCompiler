@@ -13,10 +13,10 @@ public class NodeDeref extends NodeExpr {
 	public NodeId getId() {
 		return id;
 	}
-	
+
 	@Override
 	public String toString() {
-		return getId().toString();
+		return "NodeDeref [getId()=" + getId() + "]";
 	}
 
 	@Override

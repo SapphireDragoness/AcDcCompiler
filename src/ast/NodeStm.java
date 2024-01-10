@@ -1,5 +1,5 @@
 package ast;
 
-public abstract class NodeStm {
+public abstract class NodeStm extends NodeDecSt {
 
 }

@@ -15,10 +15,10 @@ public class NodeProgram extends NodeAST {
 	public ArrayList<NodeDecSt> getDecSts() {
 		return decSts;
 	}
-	
+
 	@Override
 	public String toString() {
-		return decSts.toString();
+		return "NodeProgram [getDecSts()=" + getDecSts() + "]";
 	}
 
 	@Override
