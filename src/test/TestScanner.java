@@ -183,5 +183,42 @@ class TestScanner {
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
 		assertEquals("ID non parsificabile alla riga 3, non corrisponde al regex.", e.getMessage());
 	}
+	
+	@Test
+	void testCommenti() throws FileNotFoundException, LexicalException {
+		scanner = new Scanner("src/test/data/testScanner/testCommenti.txt");
+		
+		assertEquals("COMMENT, riga: 1", scanner.nextToken().toString());
+
+		assertEquals("TYINT, riga: 2", scanner.nextToken().toString());
+		assertEquals("ID, riga: 2, temp", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 2", scanner.nextToken().toString());
+
+		assertEquals("ID, riga: 3, temp", scanner.nextToken().toString());
+		assertEquals("OP_ASSIGN, riga: 3, +=", scanner.nextToken().toString());
+		assertEquals("FLOAT, riga: 3, 5.", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 3", scanner.nextToken().toString());
+		
+		assertEquals("COMMENT, riga: 5", scanner.nextToken().toString());
+
+		assertEquals("TYFLOAT, riga: 6", scanner.nextToken().toString());
+		assertEquals("ID, riga: 6, b", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 6", scanner.nextToken().toString());
+
+		assertEquals("ID, riga: 7, b", scanner.nextToken().toString());
+		assertEquals("OP_ASSIGN, riga: 7, =", scanner.nextToken().toString());
+		assertEquals("ID, riga: 7, temp", scanner.nextToken().toString());
+		assertEquals("PLUS, riga: 7", scanner.nextToken().toString());
+		assertEquals("FLOAT, riga: 7, 3.2", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 7", scanner.nextToken().toString());
+
+		assertEquals("PRINT, riga: 8", scanner.nextToken().toString());
+		assertEquals("ID, riga: 8, b", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 8", scanner.nextToken().toString());
+		
+		assertEquals("COMMENT, riga: 9", scanner.nextToken().toString());
+
+		assertEquals("EOF, riga: 10", scanner.nextToken().toString());
+	}
 
 }

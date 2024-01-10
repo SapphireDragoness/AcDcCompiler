@@ -13,5 +13,6 @@ public enum TokenType {
 	TIMES,
 	DIVIDE,
 	SEMI,
-	EOF;
+	COMMENT,
+	EOF
 }

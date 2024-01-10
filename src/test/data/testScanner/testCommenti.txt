@@ -1,0 +1,9 @@
+# variabile intera
+int temp;
+	temp += 5.;
+
+# variabile float
+float b;
+	b = temp + 3.2;
+	print b;
+# fine programma

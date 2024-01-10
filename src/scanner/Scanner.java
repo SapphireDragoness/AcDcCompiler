@@ -109,6 +109,12 @@ public class Scanner {
 				nextChar = peekChar();
 			}
 		}
+		
+
+		/* il commento inizia con '#' e finisce a fine riga */
+		if (nextChar == '#') {
+			return scanComment();
+		}
 
 		// Se nextChar e' in letters
 		// return scanId()
@@ -222,6 +228,13 @@ public class Scanner {
 			return new Token(TokenType.OP_ASSIGN, riga, op.toString());
 		}
 		return new Token(charTypeMap.get(c), riga, Character.toString(c));
+	}
+	
+	private Token scanComment() throws LexicalException {
+		while(peekChar() != '\n') {
+			readChar();
+		}
+		return new Token(TokenType.COMMENT, riga);
 	}
 
 	/**
