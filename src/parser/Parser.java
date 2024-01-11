@@ -2,14 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 
-import ast.LangType;
-import ast.NodeDecSt;
-import ast.NodeDecl;
-import ast.NodeExpr;
-import ast.NodeId;
-import ast.NodePrint;
-import ast.NodeProgram;
-import ast.NodeStm;
+import ast.*;
 import scanner.LexicalException;
 import scanner.Scanner;
 import token.Token;
@@ -55,7 +48,7 @@ public class Parser {
 
 	private NodeProgram parsePrg() throws SyntacticException {
 		Token t = null;
-		
+
 		try {
 			t = scanner.peekToken();
 		} catch (LexicalException e) {
@@ -90,12 +83,14 @@ public class Parser {
 		case TYFLOAT, TYINT -> {
 			NodeDecl decl = parseDcl();
 			ArrayList<NodeDecSt> decSts = parseDSs();
+			decSts.add(decl);
 			return decSts;
 		}
 		// DSs -> Stm DSs
 		case ID, PRINT -> {
 			NodeStm stm = parseStm();
 			ArrayList<NodeDecSt> decSts = parseDSs();
+			decSts.add(stm);
 			return decSts;
 		}
 		// DSs -> ϵ
@@ -121,10 +116,10 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Dcl -> Ty id DclP
 		case TYFLOAT, TYINT -> {
-			LangType type = parseTy();
+			LangType ty = parseTy();
 			String id = match(TokenType.ID).getVal();
-			NodeExpr init = parseDclP();
-			return new NodeDecl(new NodeId(id), type, init);
+			NodeExpr dclP = parseDclP();
+			return new NodeDecl(new NodeId(id), ty, dclP);
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -160,6 +155,7 @@ public class Parser {
 		}
 	}
 
+	// TODO
 	private NodeExpr parseDclP() throws SyntacticException {
 		Token t;
 
@@ -178,9 +174,9 @@ public class Parser {
 		// DclP -> opAssign Exp ;
 		case OP_ASSIGN -> {
 			match(TokenType.OP_ASSIGN);
-			parseExp();
+			NodeExpr exp = parseExp();
 			match(TokenType.SEMI);
-			return null;
+			return exp;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -201,11 +197,11 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Stm -> id opAssign Exp ;
 		case ID -> {
-			match(TokenType.ID);
+			String id = match(TokenType.ID).getVal();
 			match(TokenType.OP_ASSIGN);
-			parseExp();	
+			NodeExpr exp = parseExp();
 			match(TokenType.SEMI);
-			return null;
+			return new NodeAssign(new NodeId(id), exp);
 		}
 		// Stm -> print id ;
 		case PRINT -> {
@@ -233,9 +229,9 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Exp -> Tr ExpP
 		case ID, FLOAT, INT -> {
-			NodeExpr left = parseTr();
-			NodeExpr exp = parseExpP(left);
-			return null;
+			NodeExpr tr = parseTr();
+			NodeExpr expP = parseExpP(tr);
+			return expP;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -257,20 +253,20 @@ public class Parser {
 		// Exp -> + Tr ExpP
 		case PLUS -> {
 			match(TokenType.PLUS);
-			NodeExpr exp1 = parseTr();
-			NodeExpr exp2 = parseExpP(exp1);
-			return null;
+			NodeExpr tr = parseTr();
+			NodeExpr expP = parseExpP(tr);
+			return new NodeBinOp(LangOper.PLUS, left, expP);
 		}
 		// Exp -> - Tr ExpP
 		case MINUS -> {
 			match(TokenType.MINUS);
-			NodeExpr exp1 = parseTr();
-			NodeExpr exp2 = parseExpP(exp1);
-			return null;
+			NodeExpr tr = parseTr();
+			NodeExpr expP = parseExpP(tr);
+			return new NodeBinOp(LangOper.MINUS, left, expP);
 		}
 		// Exp -> ϵ
 		case SEMI -> {
-			return null;
+			return left;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -291,9 +287,9 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Tr -> Val TrP
 		case ID, FLOAT, INT -> {
-			NodeExpr left = parseVal();
-			NodeExpr exp = parseTrP(left);
-			return null;
+			NodeExpr val = parseVal();
+			NodeExpr trP = parseTrP(val);
+			return trP;
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -315,16 +311,16 @@ public class Parser {
 		// TrP -> * Val TrP
 		case TIMES -> {
 			match(TokenType.TIMES);
-			NodeExpr exp1 = parseVal();
-			NodeExpr exp2 = parseTrP(exp1);
-			return null;
+			NodeExpr val = parseVal();
+			NodeExpr trP = parseTrP(val);
+			return new NodeBinOp(LangOper.TIMES, left, trP);
 		}
 		// TrP -> / Val TrP
 		case DIVIDE -> {
 			match(TokenType.DIVIDE);
-			NodeExpr exp1 = parseVal();
-			NodeExpr exp2 = parseTrP(exp1);
-			return null;
+			NodeExpr val = parseVal();
+			NodeExpr trP = parseTrP(val);
+			return new NodeBinOp(LangOper.DIV, left, trP);
 		}
 		// TrP -> ϵ
 		case MINUS, PLUS, SEMI -> {
@@ -349,18 +345,18 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Val -> intVal
 		case INT -> {
-			match(TokenType.INT);
-			return null;
+			String intVal = match(TokenType.INT).getVal();
+			return new NodeCost(intVal, LangType.INT);
 		}
 		// Val -> floatVal
 		case FLOAT -> {
-			match(TokenType.FLOAT);
-			return null;
+			String floatVal = match(TokenType.FLOAT).getVal();
+			return new NodeCost(floatVal, LangType.FLOAT);
 		}
 		// Val -> id
 		case ID -> {
-			match(TokenType.ID);
-			return null;
+			String id = match(TokenType.ID).getVal();
+			return new NodeDeref(new NodeId(id));
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()

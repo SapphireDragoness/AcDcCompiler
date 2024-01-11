@@ -1,0 +1,7 @@
+# commento
+print stampa;
+float numberfloat;
+int floati;
+# commento
+a += 5 + 3;
+b = a + 5;

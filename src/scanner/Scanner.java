@@ -10,12 +10,13 @@ import java.util.HashSet;
 import token.*;
 
 /**
- * Questa classe implementa uno scanner che legge un file carattere per carattere e restituisce dei token rappresentanti quei caratteri.
+ * Questa classe implementa uno scanner che legge un file carattere per
+ * carattere e restituisce dei token rappresentanti quei caratteri.
  * 
  * @author Linda Monfermoso, 20028464
  */
 public class Scanner {
-	
+
 	final char EOF = (char) -1;
 	private int riga;
 	private PushbackReader buffer;
@@ -25,22 +26,22 @@ public class Scanner {
 	public HashSet<Character> skipChars;
 	/* insieme di lettere dell'alfabeto */
 	public HashSet<Character> letters;
-	/* insieme di numeri */
+	/* insieme di cifre */
 	public HashSet<Character> numbers;
 
 	/* insieme dei caratteri '+', '-', '*', '/', ';', '=', ';' */
 	public HashMap<Character, TokenType> charTypeMap;
 	/* insieme delle parole chiave "print", "float", "int" */
 	public HashMap<String, TokenType> keywordsMap;
-	
+
 	public Scanner(String fileName) throws FileNotFoundException {
 		this.buffer = new PushbackReader(new FileReader(fileName));
 		this.riga = 1;
 		this.current = null;
-		
+
 		inizializza();
 	}
-	
+
 	private void inizializza() {
 		/* Inizializza il set skipChars */
 		skipChars = new HashSet<Character>();
@@ -48,20 +49,21 @@ public class Scanner {
 		skipChars.add('\n');
 		skipChars.add('\t');
 		skipChars.add('\r');
+		skipChars.add('#');
 		skipChars.add(EOF);
-		
+
 		/* Inizializza il set letters */
 		letters = new HashSet<Character>();
-		for(char c = 'a'; c <= 'z'; c++) {
+		for (char c = 'a'; c <= 'z'; c++) {
 			letters.add(c);
 		}
-		
+
 		/* Inizializza il set numbers */
 		numbers = new HashSet<Character>();
-		for(char c = '0'; c <= '9'; c++) {
+		for (char c = '0'; c <= '9'; c++) {
 			numbers.add(c);
 		}
-		
+
 		/* Inizializza l'hashmap charTypeMap */
 		charTypeMap = new HashMap<Character, TokenType>();
 		charTypeMap.put('+', TokenType.PLUS);
@@ -70,22 +72,23 @@ public class Scanner {
 		charTypeMap.put('/', TokenType.DIVIDE);
 		charTypeMap.put(';', TokenType.SEMI);
 		charTypeMap.put('=', TokenType.OP_ASSIGN);
-		
+
 		/* Inizializza l'hashmap keywordsMap */
 		keywordsMap = new HashMap<String, TokenType>();
 		keywordsMap.put("print", TokenType.PRINT);
 		keywordsMap.put("float", TokenType.TYFLOAT);
 		keywordsMap.put("int", TokenType.TYINT);
 	}
-	
+
 	/**
 	 * Ritorna il prossimo token presente nello stream, consumandolo.
 	 * 
 	 * @return un token
-	 * @throws LexicalException se non è possibile leggere lo stream o se il carattere è illegale.
+	 * @throws LexicalException se non è possibile leggere lo stream o se il
+	 *                          carattere è illegale.
 	 */
 	public Token nextToken() throws LexicalException {
-		if(current != null) {
+		if (current != null) {
 			Token t = current;
 			current = null;
 			return t;
@@ -98,9 +101,16 @@ public class Scanner {
 		 * leggi '\n'. Se raggiungi la fine del file ritorna il Token EOF
 		 */
 		if (skipChars.contains(nextChar)) {
-			while(skipChars.contains(nextChar)) {
+			while (skipChars.contains(nextChar)) {
 				if (nextChar == EOF) {
 					return new Token(TokenType.EOF, riga, "EOF");
+				}
+				/* il commento inizia con '#' e finisce a fine riga */
+				if (nextChar == '#') {
+					while(nextChar != '\n') {
+						readChar();
+						nextChar = peekChar();
+					}
 				}
 				if (nextChar == '\n') {
 					riga++;
@@ -109,25 +119,18 @@ public class Scanner {
 				nextChar = peekChar();
 			}
 		}
-		
 
-		/* il commento inizia con '#' e finisce a fine riga */
-		if (nextChar == '#') {
-			return scanComment();
-		}
-
-		// Se nextChar e' in letters
-		// return scanId()
-		// che legge tutte le lettere minuscole e ritorna un Token ID o
-		// il Token associato Parola Chiave (per generare i Token per le
-		// parole chiave usate l'HashMap di corrispondenza
-		if (letters.contains(nextChar)) {
+		/*
+		 * Se nextChar e' in letters return scanId() che legge tutte le lettere
+		 * minuscole e ritorna un Token ID o il Token associato Parola Chiave (per
+		 * generare i Token per le parole chiave usate l'HashMap di corrispondenza
+		 */		if (letters.contains(nextChar)) {
 			return scanId();
 		}
 
 		// Se nextChar e' o in operators oppure
 		// ritorna il Token associato con l'operatore o il delimitatore
-		if (charTypeMap.containsKey((Object)nextChar)) {
+		if (charTypeMap.containsKey((Object) nextChar)) {
 			return scanOperators();
 		}
 
@@ -147,25 +150,26 @@ public class Scanner {
 			throw new LexicalException("Carattere illegale " + nextChar + " alla riga " + riga);
 		}
 	}
-	
+
 	/**
 	 * Ritorna il prossimo token presente nello stream, senza consumarlo.
 	 * 
 	 * @return un token
-	 * @throws LexicalException se non è possibile leggere lo stream o se il carattere è illegale.
+	 * @throws LexicalException se non è possibile leggere lo stream o se il
+	 *                          carattere è illegale.
 	 */
 	public Token peekToken() throws LexicalException {
-		if(current == null) {
+		if (current == null) {
 			current = nextToken();
 		}
 		return current;
 	}
 
 	/**
-	 * Scandisce un numero (intero o float) costruendo una stringa e ritornando il token corrispondente.
+	 * Scandisce un numero (intero o float) costruendo una stringa e ritornando il
+	 * token corrispondente.
 	 * 
 	 * @return il token corrispondente
-	 * @throws IOException se non è possibile leggere lo stream
 	 * @throws LexicalException se il numero è in formato non corretto
 	 */
 	private Token scanNumber() throws LexicalException {
@@ -178,11 +182,11 @@ public class Scanner {
 		}
 		if (number.toString().matches("[0-9]+[.]([0-9]{0,5})")) {
 			return new Token(TokenType.FLOAT, riga, number.toString());
-		} else if(number.toString().matches("0|([1-9][0-9]*)")) {
+		} else if (number.toString().matches("0|([1-9][0-9]*)")) {
 			return new Token(TokenType.INT, riga, number.toString());
-		}
-		else 
-			throw new LexicalException("FLOAT o INT non parsificabile alla riga " + riga + ", non corrisponde al regex.");
+		} else
+			throw new LexicalException(
+					"FLOAT o INT non parsificabile alla riga " + riga + ", non corrisponde al regex.");
 	}
 
 	/**
@@ -203,17 +207,17 @@ public class Scanner {
 			throw new LexicalException("ID non parsificabile alla riga " + riga + ", non corrisponde al regex.");
 		}
 		if (keywordsMap.containsKey(id.toString())) {
-			for(String kw : keywordsMap.keySet()) {
-				if(id.toString().matches(kw)) {
+			for (String kw : keywordsMap.keySet()) {
+				if (id.toString().matches(kw)) {
 					return new Token(keywordsMap.get(kw), riga);
 				}
 			}
 		}
 		return new Token(TokenType.ID, riga, id.toString());
 	}
-	
+
 	/**
-	 * Scandisce operatore ritornando il token corrispondente.
+	 * Scandisce un operatore ritornando il token corrispondente.
 	 * 
 	 * @return il token corrispondente
 	 * @throws LexicalException se il token è in formato non corretto
@@ -221,7 +225,7 @@ public class Scanner {
 	private Token scanOperators() throws LexicalException {
 		char c;
 		c = readChar();
-		if(charTypeMap.containsKey(peekChar())) {
+		if (charTypeMap.containsKey(peekChar())) {
 			StringBuilder op = new StringBuilder();
 			op.append(c);
 			op.append(readChar());
@@ -229,18 +233,11 @@ public class Scanner {
 		}
 		return new Token(charTypeMap.get(c), riga, Character.toString(c));
 	}
-	
-	private Token scanComment() throws LexicalException {
-		while(peekChar() != '\n') {
-			readChar();
-		}
-		return new Token(TokenType.COMMENT, riga);
-	}
 
 	/**
 	 * Legge un carattere dallo stream consumandolo.
 	 * 
-	 * @return il carattere letto 
+	 * @return il carattere letto
 	 * @throws LexicalException se non è possibile leggere dallo stream
 	 */
 	private char readChar() throws LexicalException {
@@ -255,8 +252,8 @@ public class Scanner {
 	 * Legge un carattere dallo stream senza consumarlo.
 	 * 
 	 * @return il carattere letto
-	 * @throws LexicalException 
-	 * @throws IOException se non è possibile leggere dallo stream
+	 * @throws LexicalException
+	 * @throws IOException      se non è possibile leggere dallo stream
 	 */
 	private char peekChar() throws LexicalException {
 		char c = 0;
@@ -272,5 +269,5 @@ public class Scanner {
 		}
 		return c;
 	}
-	
+
 }
