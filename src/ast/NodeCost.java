@@ -22,7 +22,7 @@ public class NodeCost extends NodeExpr {
 
 	@Override
 	public String toString() {
-		return "NodeCost [getValue()=" + getValue() + ", getType()=" + getType() + "]";
+		return "NodeCost [value: " + getValue() + ", type: " + getType() + "]";
 	}
 
 

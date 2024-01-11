@@ -22,7 +22,7 @@ public class NodeAssign extends NodeStm {
 
 	@Override
 	public String toString() {
-		return "NodeAssign [getId()=" + getId() + ", getExpr()=" + getExpr() + "]";
+		return "NodeAssign [id: " + getId() + ", expr: " + getExpr() + "]";
 	}
 	
 	@Override

@@ -10,9 +10,27 @@ public class TypeDescriptor {
 		this.msg = msg;
 	}
 	
-	public boolean compatibile(TypeDescriptor tD) {
-		
+	public TipoTD getTipo() {
+		return tipo;
 	}
-	// altri metodi
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setTipo(TipoTD tipo) {
+		this.tipo = tipo;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	public boolean compatibile(TypeDescriptor tD) {
+		if(this.getTipo() == TipoTD.ERROR || tD.getTipo() == TipoTD.ERROR || (this.getTipo() == TipoTD.INT && tD.getTipo() == TipoTD.FLOAT)) {
+			return false;
+		}
+		return true;
+	}
 	
 }

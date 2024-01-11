@@ -18,7 +18,7 @@ public class NodeProgram extends NodeAST {
 
 	@Override
 	public String toString() {
-		return "NodeProgram [getDecSts()=" + getDecSts() + "]";
+		return "NodeProgram [decSts: " + getDecSts() + "]";
 	}
 
 	@Override

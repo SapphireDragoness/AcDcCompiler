@@ -21,7 +21,7 @@ public class NodeConvert extends NodeExpr {
 
 	@Override
 	public String toString() {
-		return "NodeConvert [getNodeExpr()=" + getNodeExpr() + "]";
+		return "NodeConvert [nodeExpr: " + getNodeExpr() + "]";
 	}
 	
 }

@@ -28,7 +28,7 @@ public class NodeDecl extends NodeDecSt {
 
 	@Override
 	public String toString() {
-		return "NodeDecl [getId()=" + getId() + ", getType()=" + getType() + ", getInit()=" + getInit() + "]";
+		return "NodeDecl [id: " + getId() + ", type: " + getType() + ", init: " + getInit() + "]";
 	}
 
 	@Override

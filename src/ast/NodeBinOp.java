@@ -25,11 +25,10 @@ public class NodeBinOp extends NodeExpr {
 	public NodeExpr getRight() {
 		return right;
 	}
-	
+
 	@Override
 	public String toString() {
-		return getOp().toString() + getLeft().toString() + getRight().toString();
-		
+		return "NodeBinOp [op: " + getOp() + ", left: " + getLeft() + ", right: " + getRight() + "]";
 	}
 
 	@Override

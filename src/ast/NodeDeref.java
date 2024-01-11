@@ -16,7 +16,7 @@ public class NodeDeref extends NodeExpr {
 
 	@Override
 	public String toString() {
-		return "NodeDeref [getId()=" + getId() + "]";
+		return "NodeDeref [id: " + getId() + "]";
 	}
 
 	@Override
