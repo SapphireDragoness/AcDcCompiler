@@ -10,6 +10,10 @@ public class TypeDescriptor {
 		this.msg = msg;
 	}
 	
+	public TypeDescriptor(TipoTD tipo) {
+		this.tipo = tipo;
+	}
+	
 	public TipoTD getTipo() {
 		return tipo;
 	}

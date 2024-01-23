@@ -13,7 +13,7 @@ public class NodeConvert extends NodeExpr {
 	public NodeExpr getNodeExpr() {
 		return node;
 	}
-
+	
 	@Override
 	public void accept(IVisitor visitor) {
 		visitor.visit(this);

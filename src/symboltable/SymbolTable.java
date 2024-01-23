@@ -6,28 +6,29 @@ import ast.LangType;
 
 public class SymbolTable {
 	
-	private static HashMap<String, Attributes> symbolTable;
+	private static HashMap<String, Attributes> symbolTable = new HashMap<String, Attributes>();
 	
 	public static class Attributes {
 		
 		private LangType tipo;
-		
-		public Attributes(LangType tipo) {
-			this.setTipo(tipo);
-		}
+		private char registro;
 
 		public LangType getTipo() {
 			return tipo;
 		}
 
+		public char getRegistro() {
+			return registro;
+		}
+
 		public void setTipo(LangType tipo) {
 			this.tipo = tipo;
 		}
-		
-	}
 
-	public static void init() {
-		symbolTable = new HashMap<>();
+		public void setRegistro(char registro) {
+			this.registro = registro;
+		}	
+		
 	}
 
 	public static boolean enter(String id, Attributes entry) {
@@ -43,12 +44,12 @@ public class SymbolTable {
 	}
 
 	public static String toStr() {
-		StringBuilder str = new StringBuilder();
+		String str = "";
 		
 		for(var e : symbolTable.entrySet()) {
-			str.append("Chiave").append(e.getKey()).append("\t").append("Valore").append(e.getValue()).append("\n");
+			str += "Chiave" + e.getKey() + "\t" + "Valore" + e.getValue() + "\n";
 		}
-		return str.toString();
+		return str;
 	}
 
 	public static int size() {
