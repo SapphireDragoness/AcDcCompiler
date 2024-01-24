@@ -7,3 +7,5 @@ float b;
 	b = temp + 3.2;
 	print b;
 # fine programma
+# commento su più righe
+#
