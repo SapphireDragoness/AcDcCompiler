@@ -1,0 +1,7 @@
+int temp;
+	temp+=5.;
+
+float b;
+	b=temp+3.2;
+	print b;
+	

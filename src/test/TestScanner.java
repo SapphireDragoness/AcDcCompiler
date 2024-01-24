@@ -33,7 +33,7 @@ class TestScanner {
 
 	@Test
 	void testEOF() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testEOF.txt");
+		scanner = new Scanner(path + "testEOF.txt");
 
 		assertEquals(TokenType.EOF, scanner.nextToken().getTipo());
 	}
@@ -59,8 +59,40 @@ class TestScanner {
 
 	@Test
 	void testGenerale() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testGenerale.txt");
+		scanner = new Scanner(path + "testGenerale.txt");
 
+		assertEquals("TYINT, riga: 1", scanner.nextToken().toString());
+		assertEquals("ID, riga: 1, temp", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 1", scanner.nextToken().toString());
+
+		assertEquals("ID, riga: 2, temp", scanner.nextToken().toString());
+		assertEquals("OP_ASSIGN, riga: 2, +=", scanner.nextToken().toString());
+		assertEquals("FLOAT, riga: 2, 5.", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 2", scanner.nextToken().toString());
+
+		assertEquals("TYFLOAT, riga: 4", scanner.nextToken().toString());
+		assertEquals("ID, riga: 4, b", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 4", scanner.nextToken().toString());
+
+		assertEquals("ID, riga: 5, b", scanner.nextToken().toString());
+		assertEquals("OP_ASSIGN, riga: 5, =", scanner.nextToken().toString());
+		assertEquals("ID, riga: 5, temp", scanner.nextToken().toString());
+		assertEquals("PLUS, riga: 5", scanner.nextToken().toString());
+		assertEquals("FLOAT, riga: 5, 3.2", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 5", scanner.nextToken().toString());
+
+		assertEquals("PRINT, riga: 6", scanner.nextToken().toString());
+		assertEquals("ID, riga: 6, b", scanner.nextToken().toString());
+		assertEquals("SEMI, riga: 6", scanner.nextToken().toString());
+
+		assertEquals("EOF, riga: 7", scanner.nextToken().toString());
+	}
+	
+	@Test
+	void testGeneraleNoSpazi() throws FileNotFoundException, LexicalException {
+		scanner = new Scanner(path + "testGeneraleNoSpazi.txt");
+
+		/* tokenizza correttamente id seguiti immediatamente da operatori (es. temp+=5) */
 		assertEquals("TYINT, riga: 1", scanner.nextToken().toString());
 		assertEquals("ID, riga: 1, temp", scanner.nextToken().toString());
 		assertEquals("SEMI, riga: 1", scanner.nextToken().toString());
@@ -90,7 +122,7 @@ class TestScanner {
 
 	@Test
 	void testId() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testId.txt");
+		scanner = new Scanner(path + "testId.txt");
 
 		assertEquals(TokenType.ID, scanner.nextToken().getTipo());
 		assertEquals(TokenType.ID, scanner.nextToken().getTipo());
@@ -100,7 +132,7 @@ class TestScanner {
 
 	@Test
 	void testIdKeyWords() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testIdKeyWords.txt");
+		scanner = new Scanner(path + "testIdKeyWords.txt");
 
 		assertEquals(TokenType.TYINT, scanner.nextToken().getTipo());
 		assertEquals(TokenType.ID, scanner.nextToken().getTipo());
@@ -114,7 +146,7 @@ class TestScanner {
 
 	@Test
 	void testINT() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testINT.txt");
+		scanner = new Scanner(path + "testINT.txt");
 
 		assertEquals("698", scanner.nextToken().getVal());
 		assertEquals("560099", scanner.nextToken().getVal());
@@ -124,7 +156,7 @@ class TestScanner {
 
 	@Test
 	void testKeywords() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testKeywords.txt");
+		scanner = new Scanner(path + "testKeywords.txt");
 
 		assertEquals(TokenType.PRINT, scanner.nextToken().getTipo());
 		assertEquals(TokenType.TYFLOAT, scanner.nextToken().getTipo());
@@ -158,7 +190,7 @@ class TestScanner {
 
 	@Test
 	void peekToken() throws LexicalException, FileNotFoundException {
-		scanner = new Scanner("src/test/data/testScanner/testGenerale.txt");
+		scanner = new Scanner(path + "testGenerale.txt");
 
 		assertEquals(scanner.peekToken().getTipo(), TokenType.TYINT);
 		assertEquals(scanner.nextToken().getTipo(), TokenType.TYINT);
@@ -174,7 +206,7 @@ class TestScanner {
 	
 	@Test
 	void testErroriId() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/erroriId.txt");
+		scanner = new Scanner(path + "erroriId.txt");
 
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
 		assertEquals("ID non parsificabile alla riga 1, non corrisponde al regex.", e.getMessage());
@@ -186,7 +218,7 @@ class TestScanner {
 	
 	@Test
 	void testCommenti() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner("src/test/data/testScanner/testCommenti.txt");
+		scanner = new Scanner(path + "testCommenti.txt");
 
 		/* ignora correttamente i commenti */
 		assertEquals("TYINT, riga: 2", scanner.nextToken().toString());

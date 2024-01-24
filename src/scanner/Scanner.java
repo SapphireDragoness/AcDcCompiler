@@ -124,7 +124,8 @@ public class Scanner {
 		 * Se nextChar e' in letters return scanId() che legge tutte le lettere
 		 * minuscole e ritorna un Token ID o il Token associato Parola Chiave (per
 		 * generare i Token per le parole chiave usate l'HashMap di corrispondenza
-		 */		if (letters.contains(nextChar)) {
+		 */		
+		if (letters.contains(nextChar)) {
 			return scanId();
 		}
 
@@ -199,7 +200,7 @@ public class Scanner {
 		String id = "";
 		char c;
 
-		while (!skipChars.contains(peekChar()) && peekChar() != ';') {
+		while (!skipChars.contains(peekChar()) && peekChar() != ';' && !charTypeMap.containsKey(peekChar())) {
 			c = readChar();
 			id += c;
 		}
