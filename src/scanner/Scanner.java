@@ -173,17 +173,17 @@ public class Scanner {
 	 * @throws LexicalException se il numero è in formato non corretto
 	 */
 	private Token scanNumber() throws LexicalException {
-		StringBuilder number = new StringBuilder();
+		String number = "";
 		char c;
 
 		while (!skipChars.contains(peekChar()) && peekChar() != ';') {
 			c = readChar();
-			number.append(c);
+			number += c;
 		}
-		if (number.toString().matches("[0-9]+[.]([0-9]{0,5})")) {
-			return new Token(TokenType.FLOAT, riga, number.toString());
-		} else if (number.toString().matches("0|([1-9][0-9]*)")) {
-			return new Token(TokenType.INT, riga, number.toString());
+		if (number.matches("[0-9]+[.]([0-9]{0,5})")) {
+			return new Token(TokenType.FLOAT, riga, number);
+		} else if (number.matches("0|([1-9][0-9]*)")) {
+			return new Token(TokenType.INT, riga, number);
 		} else
 			throw new LexicalException(
 					"FLOAT o INT non parsificabile alla riga " + riga + ", non corrisponde al regex.");
@@ -196,24 +196,24 @@ public class Scanner {
 	 * @throws LexicalException se l'id è in formato non corretto
 	 */
 	private Token scanId() throws LexicalException {
-		StringBuilder id = new StringBuilder();
+		String id = "";
 		char c;
 
 		while (!skipChars.contains(peekChar()) && peekChar() != ';') {
 			c = readChar();
-			id.append(c);
+			id += c;
 		}
-		if (!id.toString().matches("[a-z]+")) {
+		if (!id.matches("[a-z]+")) {
 			throw new LexicalException("ID non parsificabile alla riga " + riga + ", non corrisponde al regex.");
 		}
-		if (keywordsMap.containsKey(id.toString())) {
+		if (keywordsMap.containsKey(id)) {
 			for (String kw : keywordsMap.keySet()) {
-				if (id.toString().matches(kw)) {
+				if (id.matches(kw)) {
 					return new Token(keywordsMap.get(kw), riga);
 				}
 			}
 		}
-		return new Token(TokenType.ID, riga, id.toString());
+		return new Token(TokenType.ID, riga, id);
 	}
 
 	/**
@@ -226,10 +226,10 @@ public class Scanner {
 		char c;
 		c = readChar();
 		if (charTypeMap.containsKey(peekChar())) {
-			StringBuilder op = new StringBuilder();
-			op.append(c);
-			op.append(readChar());
-			return new Token(TokenType.OP_ASSIGN, riga, op.toString());
+			String op = "";
+			op += c;
+			op += readChar();
+			return new Token(TokenType.OP_ASSIGN, riga, op);
 		}
 		return new Token(charTypeMap.get(c), riga, Character.toString(c));
 	}
