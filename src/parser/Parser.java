@@ -83,14 +83,14 @@ public class Parser {
 		case TYFLOAT, TYINT -> {
 			NodeDecl decl = parseDcl();
 			ArrayList<NodeDecSt> decSts = parseDSs();
-			decSts.add(decl);
+			decSts.add(0, decl);
 			return decSts;
 		}
 		// DSs -> Stm DSs
 		case ID, PRINT -> {
 			NodeStm stm = parseStm();
 			ArrayList<NodeDecSt> decSts = parseDSs();
-			decSts.add(stm);
+			decSts.add(0, stm);
 			return decSts;
 		}
 		// DSs -> ϵ
@@ -117,9 +117,9 @@ public class Parser {
 		// Dcl -> Ty id DclP
 		case TYFLOAT, TYINT -> {
 			LangType ty = parseTy();
-			String id = match(TokenType.ID).getVal();
+			NodeId id = new NodeId(match(TokenType.ID).getVal());
 			NodeExpr dclP = parseDclP();
-			return new NodeDecl(new NodeId(id), ty, dclP);
+			return new NodeDecl(id, ty, dclP);
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -155,7 +155,6 @@ public class Parser {
 		}
 	}
 
-	// TODO
 	private NodeExpr parseDclP() throws SyntacticException {
 		Token t;
 
@@ -197,18 +196,24 @@ public class Parser {
 		switch (t.getTipo()) {
 		// Stm -> id opAssign Exp ;
 		case ID -> {
-			String id = match(TokenType.ID).getVal();
-			match(TokenType.OP_ASSIGN);
-			NodeExpr exp = parseExp();
+			NodeId id = new NodeId(match(TokenType.ID).getVal());
+			Token op = match(TokenType.OP_ASSIGN);
+			NodeExpr exp = parseExp();	
+			switch (op.getVal()){
+	            case "+=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.PLUS, exp);
+	            case "-=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.MINUS, exp);
+	            case "*=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.TIMES, exp);
+	            case "/=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.DIV, exp);
+			}	
 			match(TokenType.SEMI);
-			return new NodeAssign(new NodeId(id), exp);
+			return new NodeAssign(id, exp);
 		}
 		// Stm -> print id ;
 		case PRINT -> {
 			match(TokenType.PRINT);
-			String id = match(TokenType.ID).getVal();
+			NodeId id = new NodeId(match(TokenType.ID).getVal());
 			match(TokenType.SEMI);
-			return new NodePrint(new NodeId(id));
+			return new NodePrint(id);
 		}
 		default -> {
 			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
@@ -255,14 +260,14 @@ public class Parser {
 			match(TokenType.PLUS);
 			NodeExpr tr = parseTr();
 			NodeExpr expP = parseExpP(tr);
-			return new NodeBinOp(LangOper.PLUS, left, expP);
+			return new NodeBinOp(left, LangOper.PLUS, expP);
 		}
 		// Exp -> - Tr ExpP
 		case MINUS -> {
 			match(TokenType.MINUS);
 			NodeExpr tr = parseTr();
 			NodeExpr expP = parseExpP(tr);
-			return new NodeBinOp(LangOper.MINUS, left, expP);
+			return new NodeBinOp(left, LangOper.MINUS, expP);
 		}
 		// Exp -> ϵ
 		case SEMI -> {
@@ -313,14 +318,14 @@ public class Parser {
 			match(TokenType.TIMES);
 			NodeExpr val = parseVal();
 			NodeExpr trP = parseTrP(val);
-			return new NodeBinOp(LangOper.TIMES, left, trP);
+			return new NodeBinOp(left, LangOper.TIMES, trP);
 		}
 		// TrP -> / Val TrP
 		case DIVIDE -> {
 			match(TokenType.DIVIDE);
 			NodeExpr val = parseVal();
 			NodeExpr trP = parseTrP(val);
-			return new NodeBinOp(LangOper.DIV, left, trP);
+			return new NodeBinOp(left, LangOper.DIV, trP);
 		}
 		// TrP -> ϵ
 		case MINUS, PLUS, SEMI -> {
