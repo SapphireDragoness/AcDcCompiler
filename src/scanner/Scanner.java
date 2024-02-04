@@ -147,9 +147,7 @@ public class Scanner {
 		// Altrimenti il carattere NON E' UN CARATTERE LEGALE sollevate una
 		// eccezione lessicale dicendo la riga e il carattere che la hanno
 		// provocata.
-		else {
-			throw new LexicalException("Carattere illegale " + nextChar + " alla riga " + riga);
-		}
+		throw new LexicalException("Carattere illegale " + nextChar + " alla riga " + riga);
 	}
 
 	/**

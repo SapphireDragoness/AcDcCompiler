@@ -351,12 +351,12 @@ public class Parser {
 		// Val -> intVal
 		case INT -> {
 			String intVal = match(TokenType.INT).getVal();
-			return new NodeCost(intVal, LangType.INT);
+			return new NodeConst(intVal, LangType.INT);
 		}
 		// Val -> floatVal
 		case FLOAT -> {
 			String floatVal = match(TokenType.FLOAT).getVal();
-			return new NodeCost(floatVal, LangType.FLOAT);
+			return new NodeConst(floatVal, LangType.FLOAT);
 		}
 		// Val -> id
 		case ID -> {
