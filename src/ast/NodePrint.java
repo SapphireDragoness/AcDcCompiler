@@ -16,7 +16,7 @@ public class NodePrint extends NodeStm {
 
 	@Override
 	public String toString() {
-		return "NodePrint [id: " + getId() + "]";
+		return "[PRINT: " + getId() + "]";
 	}
 
 	@Override

@@ -4,13 +4,13 @@ import visitor.IVisitor;
 
 public class NodeBinOp extends NodeExpr {
 
-	private LangOper op;
 	private NodeExpr left;
+	private LangOper op;
 	private NodeExpr right;
 	
-	public NodeBinOp(LangOper op, NodeExpr left, NodeExpr right) {
-		this.op = op;
+	public NodeBinOp(NodeExpr left, LangOper op, NodeExpr right) {
 		this.left = left;
+		this.op = op;
 		this.right = right;
 	}
 
@@ -26,9 +26,17 @@ public class NodeBinOp extends NodeExpr {
 		return right;
 	}
 
+	public void setLeft(NodeExpr left) {
+		this.left = left;
+	}
+
+	public void setRight(NodeExpr right) {
+		this.right = right;
+	}
+
 	@Override
 	public String toString() {
-		return "NodeBinOp [op: " + getOp() + ", left: " + getLeft() + ", right: " + getRight() + "]";
+		return "[BINOP: " + getLeft() + " " + getOp() + " " + getRight() + "]";
 	}
 
 	@Override

@@ -2,12 +2,12 @@ package ast;
 
 import visitor.IVisitor;
 
-public class NodeCost extends NodeExpr {
+public class NodeConst extends NodeExpr {
 
 	private String value;
 	private LangType type;
 	
-	public NodeCost(String value, LangType type) {
+	public NodeConst(String value, LangType type) {
 		this.value = value;
 		this.type = type;
 	}
@@ -22,7 +22,7 @@ public class NodeCost extends NodeExpr {
 
 	@Override
 	public String toString() {
-		return "NodeCost [value: " + getValue() + ", type: " + getType() + "]";
+		return "[CONST: " + getValue() + ", " + getType() + "]";
 	}
 
 
