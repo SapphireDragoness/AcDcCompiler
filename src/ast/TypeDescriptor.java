@@ -31,7 +31,7 @@ public class TypeDescriptor {
 	}
 
 	public boolean compatibile(TypeDescriptor tD) {
-		if(this.getTipo() == TipoTD.INT && tD.getTipo() == TipoTD.FLOAT) {
+		if(this.getTipo() == TipoTD.FLOAT && tD.getTipo() == TipoTD.INT) {
 			return false;
 		}
 		return true;

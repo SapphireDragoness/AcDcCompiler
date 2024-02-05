@@ -6,15 +6,23 @@ import ast.LangType;
 
 public class SymbolTable {
 	
-	private static HashMap<String, Attributes> symbolTable = new HashMap<String, Attributes>();
-	
 	public static class Attributes {
 		
 		private LangType tipo;
+		private String nome;
 		private char registro;
+		
+		public Attributes(LangType tipo, String nome) {
+			this.tipo = tipo;
+			this.nome = nome;
+		}
 
 		public LangType getTipo() {
 			return tipo;
+		}
+		
+		public String getNome() {
+			return nome;
 		}
 
 		public char getRegistro() {
@@ -30,11 +38,16 @@ public class SymbolTable {
 		}	
 		
 	}
+	
+	private static HashMap<String, Attributes> symbolTable;
+	
+	public static void inizializza() {
+		symbolTable = new HashMap<>();
+	}
 
 	public static boolean enter(String id, Attributes entry) {
-		if(symbolTable.get(id) != null) {
+		if(symbolTable.containsKey(id))
 			return false;
-		}
 		symbolTable.put(id, entry);
 		return true;
 	}
@@ -47,7 +60,7 @@ public class SymbolTable {
 		String str = "";
 		
 		for(var e : symbolTable.entrySet()) {
-			str += "Chiave" + e.getKey() + "\t" + "Valore" + e.getValue() + "\n";
+			str += "Chiave: " + e.getKey() + ", Valore: " + e.getValue().getTipo() + "\n";
 		}
 		return str;
 	}
