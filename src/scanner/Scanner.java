@@ -7,6 +7,7 @@ import java.io.PushbackReader;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import eccezioni.LexicalException;
 import token.*;
 
 /**
