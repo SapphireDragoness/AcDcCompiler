@@ -4,7 +4,7 @@ public class TypeDescriptor {
 
 	private TipoTD tipo;
 	private String msg;
-	 
+	
 	public TypeDescriptor(TipoTD tipo, String msg) {
 		this.tipo = tipo;
 		this.msg = msg;
@@ -20,14 +20,6 @@ public class TypeDescriptor {
 
 	public String getMsg() {
 		return msg;
-	}
-
-	public void setTipo(TipoTD tipo) {
-		this.tipo = tipo;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
 	}
 
 	public boolean compatibile(TypeDescriptor tD) {
