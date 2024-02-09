@@ -10,12 +10,4 @@ public class LexicalException extends Exception {
 		super(msg);
 	}
 	
-	public LexicalException(Throwable cause) {
-		super(cause);
-	}
-	
-	public LexicalException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-	
 }

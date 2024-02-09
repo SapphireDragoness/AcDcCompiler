@@ -10,12 +10,4 @@ public class SyntacticException extends Exception {
 		super(msg);
 	}
 	
-	public SyntacticException(Throwable cause) {
-		super(cause);
-	}
-	
-	public SyntacticException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-	
 }
