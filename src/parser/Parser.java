@@ -42,8 +42,7 @@ public class Parser {
 				throw new SyntacticException(e.getMessage());
 			}
 		} else {
-			throw new SyntacticException(
-					"Aspettavo " + tipo.toString() + " alla riga " + t.getRiga() + " ma è " + t.getTipo() + ".");
+			throw new SyntacticException(t.getRiga(), tipo.toString(), t.getTipo());
 		}
 	}
 
@@ -63,9 +62,11 @@ public class Parser {
 			match(TokenType.EOF);
 			return new NodeProgram(prg);
 		}
+		/* il compilatore entra in panic mode, cerca un ';' e continua il parsing */
 		default -> {
-			throw new SyntacticException(
-					"Il token " + t.getTipo() + " alla riga " + t.getRiga() + " non è l'inizio del programma.");
+			match(TokenType.SEMI);
+			parse();
+			throw new SyntacticException(t.getRiga(), "TYFLOAT, TYINT, ID, PRINT o EOF (panic mode: cercherò un ';')", t.getTipo());
 		}
 		}
 	}
@@ -99,8 +100,7 @@ public class Parser {
 			return new ArrayList<NodeDecSt>();
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un DSs, dovrebbe essere TYFLOAT, TYINT, ID, PRINT o EOF.");
+			throw new SyntacticException(t.getRiga(), "TYFLOAT, TYINT, ID, PRINT o EOF", t.getTipo());
 		}
 		}
 	}
@@ -123,8 +123,7 @@ public class Parser {
 			return new NodeDecl(id, ty, dclP);
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un Dcl, dovrebbe essere TYFLOAT o TYINT.");
+			throw new SyntacticException(t.getRiga(), "TYFLOAT o TYINT", t.getTipo());
 		}
 		}
 	}
@@ -150,8 +149,7 @@ public class Parser {
 			return LangType.INT;
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un Stm, dovrebbe essere TYFLOAT o TYINT.");
+			throw new SyntacticException(t.getRiga(), "TYFLOAT o TYINT", t.getTipo());
 		}
 		}
 	}
@@ -179,8 +177,7 @@ public class Parser {
 			return exp;
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un DclP, dovrebbe essere SEMI o OP_ASSIGN.");
+			throw new SyntacticException(t.getRiga(), "SEMI o OP_ASSIGN", t.getTipo());
 		}
 		}
 	}
@@ -199,13 +196,13 @@ public class Parser {
 		case ID -> {
 			NodeId id = new NodeId(match(TokenType.ID).getVal());
 			Token op = match(TokenType.OP_ASSIGN);
-			NodeExpr exp = parseExp();	
-			switch (op.getVal()){
-	            case "+=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.PLUS, exp);
-	            case "-=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.MINUS, exp);
-	            case "*=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.TIMES, exp);
-	            case "/=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.DIV, exp);
-			}	
+			NodeExpr exp = parseExp();
+			switch (op.getVal()) {
+			case "+=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.PLUS, exp);
+			case "-=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.MINUS, exp);
+			case "*=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.TIMES, exp);
+			case "/=" -> exp = new NodeBinOp(new NodeDeref(id), LangOper.DIV, exp);
+			}
 			match(TokenType.SEMI);
 			return new NodeAssign(id, exp);
 		}
@@ -217,8 +214,7 @@ public class Parser {
 			return new NodePrint(id);
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un Stm, dovrebbe essere ID o PRINT.");
+			throw new SyntacticException(t.getRiga(), "ID o PRINT", t.getTipo());
 		}
 		}
 	}
@@ -240,8 +236,7 @@ public class Parser {
 			return expP;
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un Exp, dovrebbe essere ID, FLOAT o INT.");
+			throw new SyntacticException(t.getRiga(), "ID, FLOAT o INT", t.getTipo());
 		}
 		}
 	}
@@ -275,8 +270,7 @@ public class Parser {
 			return left;
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un ExpP, dovrebbe essere PLUS, MINUS o SEMI.");
+			throw new SyntacticException(t.getRiga(), "PLUS, MINUS o SEMI", t.getTipo());
 		}
 		}
 	}
@@ -298,8 +292,7 @@ public class Parser {
 			return trP;
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un Tr, dovrebbe essere ID, FLOAT o INT.");
+			throw new SyntacticException(t.getRiga(), "ID, FLOAT o INT", t.getTipo());
 		}
 		}
 	}
@@ -333,8 +326,7 @@ public class Parser {
 			return left;
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un TrP, dovrebbe essere TIMES, DIVIDE, PLUS, MINUS o SEMI.");
+			throw new SyntacticException(t.getRiga(), "TIMES, DIVIDE, MINUS, PLUS o SEMI", t.getTipo());
 		}
 		}
 	}
@@ -365,8 +357,7 @@ public class Parser {
 			return new NodeDeref(new NodeId(id));
 		}
 		default -> {
-			throw new SyntacticException("Il token " + t.getTipo() + " alla riga " + t.getRiga()
-					+ " non è un Val, dovrebbe essere INT, FLOAT o ID.");
+			throw new SyntacticException(t.getRiga(), "INT, FLOAT o ID", t.getTipo());
 		}
 		}
 	}

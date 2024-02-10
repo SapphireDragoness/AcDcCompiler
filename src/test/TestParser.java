@@ -7,9 +7,8 @@ import java.io.FileNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import ast.NodeProgram;
+import eccezioni.SyntacticException;
 import parser.Parser;
-import parser.SyntacticException;
 import scanner.Scanner;
 
 class TestParser {
@@ -18,28 +17,13 @@ class TestParser {
 	Parser parser;
 	Scanner scanner;
 	SyntacticException e;
-	
-	@Test
-	void testParserCommenti() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner(path + "testParserCommenti.txt");
-		parser = new Parser(scanner);
-		NodeProgram nodePrg = parser.parse();
-
-		/* ignora correttamente i commenti */
-		assertEquals(
-				"NodeProgram [decSts: [NodeAssign [id: NodeId [name: b], expr: NodeBinOp [op: PLUS, left: NodeDeref [id: NodeId [name: a]], right: NodeCost [value: 5, type: INT]]], NodeAssign [id: NodeId [name: a], expr: NodeBinOp [op: PLUS, left: NodeCost [value: 5, type: INT], right: NodeCost [value: 3, type: INT]]], NodeDecl [id: NodeId [name: floati], type: INT, init: null], NodeDecl [id: NodeId [name: numberfloat], type: FLOAT, init: null], NodePrint [id: NodeId [name: stampa]]]]",
-				nodePrg.toString());
-	}
 
 	@Test
 	void testParserCorretto1() throws FileNotFoundException, SyntacticException {
 		scanner = new Scanner(path + "testParserCorretto1.txt");
 		parser = new Parser(scanner);
-		NodeProgram nodePrg = parser.parse();
 
-		assertEquals(
-				"NodeProgram [decSts: [NodeAssign [id: NodeId [name: b], expr: NodeBinOp [op: PLUS, left: NodeDeref [id: NodeId [name: a]], right: NodeCost [value: 5, type: INT]]], NodeAssign [id: NodeId [name: a], expr: NodeBinOp [op: PLUS, left: NodeCost [value: 5, type: INT], right: NodeCost [value: 3, type: INT]]], NodeDecl [id: NodeId [name: floati], type: INT, init: null], NodeDecl [id: NodeId [name: numberfloat], type: FLOAT, init: null], NodePrint [id: NodeId [name: stampa]]]]",
-				nodePrg.toString());
+		Assertions.assertDoesNotThrow(() -> parser.parse());
 	}
 
 	@Test
@@ -51,12 +35,21 @@ class TestParser {
 	}
 
 	@Test
+	void testParserCommenti() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner(path + "testParserCommenti.txt");
+		parser = new Parser(scanner);
+
+		/* ignora correttamente i commenti */
+		Assertions.assertDoesNotThrow(() -> parser.parse());
+	}
+	
+	@Test
 	void testParserEcc0() throws FileNotFoundException, SyntacticException {
 		scanner = new Scanner(path + "testParserEcc_0.txt");
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Aspettavo OP_ASSIGN alla riga 1 ma è SEMI.", e.getMessage());
+		assertEquals("Errore sintattico a riga 1: atteso OP_ASSIGN, ma è SEMI", e.getMessage());
 	}
 
 	@Test
@@ -65,7 +58,7 @@ class TestParser {
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Il token TIMES alla riga 2 non è un Tr, dovrebbe essere ID, FLOAT o INT.", e.getMessage());
+		assertEquals("Errore sintattico a riga 2: atteso ID, FLOAT o INT, ma è TIMES", e.getMessage());
 	}
 
 	@Test
@@ -74,7 +67,7 @@ class TestParser {
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Il token INT alla riga 3 non è un DSs, dovrebbe essere TYFLOAT, TYINT, ID, PRINT o EOF.",
+		assertEquals("Errore sintattico a riga 3: atteso TYFLOAT, TYINT, ID, PRINT o EOF, ma è INT",
 				e.getMessage());
 	}
 
@@ -84,7 +77,7 @@ class TestParser {
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Aspettavo OP_ASSIGN alla riga 2 ma è PLUS.", e.getMessage());
+		assertEquals("Errore sintattico a riga 2: atteso OP_ASSIGN, ma è PLUS", e.getMessage());
 	}
 
 	@Test
@@ -93,7 +86,7 @@ class TestParser {
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Aspettavo ID alla riga 2 ma è INT.", e.getMessage());
+		assertEquals("Errore sintattico a riga 2: atteso ID, ma è INT", e.getMessage());
 	}
 
 	@Test
@@ -102,7 +95,7 @@ class TestParser {
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Aspettavo ID alla riga 3 ma è INT.", e.getMessage());
+		assertEquals("Errore sintattico a riga 3: atteso ID, ma è INT", e.getMessage());
 	}
 
 	@Test
@@ -111,7 +104,7 @@ class TestParser {
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Aspettavo ID alla riga 4 ma è TYFLOAT.", e.getMessage());
+		assertEquals("Errore sintattico a riga 4: atteso ID, ma è TYFLOAT", e.getMessage());
 	}
 
 	@Test
@@ -120,7 +113,32 @@ class TestParser {
 		parser = new Parser(scanner);
 
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Aspettavo ID alla riga 2 ma è OP_ASSIGN.", e.getMessage());
+		assertEquals("Errore sintattico a riga 2: atteso ID, ma è OP_ASSIGN", e.getMessage());
+	}
+	
+	@Test
+	void testParserEcc8() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner(path + "testParserEcc_8.txt");
+		parser = new Parser(scanner);
+
+		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
+		assertEquals("Errore sintattico a riga 3: atteso ID, ma è INT", e.getMessage());
+	}
+	
+	@Test
+	void testParserEcc9() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner(path + "testParserEcc_9.txt");
+		parser = new Parser(scanner);
+
+		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
+		assertEquals("Errore sintattico a riga 1: atteso ID, ma è SEMI", e.getMessage());
+		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
+		assertEquals("Errore sintattico a riga 2: atteso ID, ma è TYFLOAT", e.getMessage());
+		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
+		assertEquals("Errore sintattico a riga 2: atteso ID, ma è SEMI", e.getMessage());
+		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
+		assertEquals("Errore sintattico a riga 2: atteso TYFLOAT, TYINT, ID, PRINT o EOF (panic mode: cercherò un ';'), ma è SEMI", e.getMessage());
+		Assertions.assertDoesNotThrow(() -> parser.parse());
 	}
 
 	@Test
