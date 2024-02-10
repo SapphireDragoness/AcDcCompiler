@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import scanner.LexicalException;
+import eccezioni.LexicalException;
 import scanner.Scanner;
 import token.Token;
 import token.TokenType;
@@ -24,11 +24,43 @@ class TestScanner {
 		scanner = new Scanner("src/test/data/testScanner/erroriNumbers.txt");
 
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("FLOAT o INT non parsificabile alla riga 1, non corrisponde al regex.", e.getMessage());
+		assertEquals("Errore lessicale a riga 1: sequenza di caratteri '00' non riconosciuta", e.getMessage());
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("FLOAT o INT non parsificabile alla riga 2, non corrisponde al regex.", e.getMessage());
+		assertEquals("Errore lessicale a riga 2: sequenza di caratteri '123a' non riconosciuta", e.getMessage());
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("FLOAT o INT non parsificabile alla riga 3, non corrisponde al regex.", e.getMessage());
+		assertEquals("Errore lessicale a riga 3: sequenza di caratteri '12.a' non riconosciuta", e.getMessage());
+	}
+	
+	@Test
+	void testErroriId() throws FileNotFoundException, LexicalException {
+		scanner = new Scanner(path + "erroriId.txt");
+
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 1: sequenza di caratteri 'number1' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 2: sequenza di caratteri '34number' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 3: sequenza di caratteri 'float56' non riconosciuta", e.getMessage());
+	}
+	
+	@Test
+	void testErroriOp() throws FileNotFoundException, LexicalException {
+		scanner = new Scanner(path + "erroriOp.txt");
+
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 1: sequenza di caratteri '++' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 2: sequenza di caratteri '==' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 2: sequenza di caratteri ';;' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 3: sequenza di caratteri '**' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 3: sequenza di caratteri '//' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 4: sequenza di caratteri '/+' non riconosciuta", e.getMessage());
+		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
+		assertEquals("Errore lessicale a riga 5: sequenza di caratteri '=*' non riconosciuta", e.getMessage());
 	}
 
 	@Test
@@ -189,7 +221,7 @@ class TestScanner {
 	}
 
 	@Test
-	void peekToken() throws LexicalException, FileNotFoundException {
+	void testPeekToken() throws LexicalException, FileNotFoundException {
 		scanner = new Scanner(path + "testGenerale.txt");
 
 		assertEquals(scanner.peekToken().getTipo(), TokenType.TYINT);
@@ -202,18 +234,6 @@ class TestScanner {
 		assertEquals(t.getTipo(), TokenType.ID);
 		assertEquals(t.getRiga(), 1);
 		assertEquals(t.getVal(), "temp");
-	}
-	
-	@Test
-	void testErroriId() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner(path + "erroriId.txt");
-
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("ID non parsificabile alla riga 1, non corrisponde al regex.", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("FLOAT o INT non parsificabile alla riga 2, non corrisponde al regex.", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("ID non parsificabile alla riga 3, non corrisponde al regex.", e.getMessage());
 	}
 	
 	@Test

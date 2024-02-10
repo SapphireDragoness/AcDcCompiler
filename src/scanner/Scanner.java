@@ -18,7 +18,7 @@ import token.*;
  */
 public class Scanner {
 
-	final char EOF = (char) -1;
+	final char EOF = (char)-1;
 	private int riga;
 	private PushbackReader buffer;
 	private Token current;
@@ -148,7 +148,7 @@ public class Scanner {
 		// Altrimenti il carattere NON E' UN CARATTERE LEGALE sollevate una
 		// eccezione lessicale dicendo la riga e il carattere che la hanno
 		// provocata.
-		throw new LexicalException("Carattere illegale " + nextChar + " alla riga " + riga);
+		throw new LexicalException(riga, nextChar);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class Scanner {
 		String number = "";
 		char c;
 
-		while (!skipChars.contains(peekChar()) && peekChar() != ';') {
+		while (!skipChars.contains(peekChar()) && !charTypeMap.containsKey(peekChar())) {
 			c = readChar();
 			number += c;
 		}
@@ -185,8 +185,7 @@ public class Scanner {
 		} else if (number.matches("0|([1-9][0-9]*)")) {
 			return new Token(TokenType.INT, riga, number);
 		} else
-			throw new LexicalException(
-					"FLOAT o INT non parsificabile alla riga " + riga + ", non corrisponde al regex.");
+			throw new LexicalException(riga, number);
 	}
 
 	/**
@@ -199,12 +198,12 @@ public class Scanner {
 		String id = "";
 		char c;
 
-		while (!skipChars.contains(peekChar()) && peekChar() != ';' && !charTypeMap.containsKey(peekChar())) {
+		while (!skipChars.contains(peekChar()) && !charTypeMap.containsKey(peekChar())) {
 			c = readChar();
 			id += c;
 		}
 		if (!id.matches("[a-z]+")) {
-			throw new LexicalException("ID non parsificabile alla riga " + riga + ", non corrisponde al regex.");
+			throw new LexicalException(riga, id);
 		}
 		if (keywordsMap.containsKey(id)) {
 			for (String kw : keywordsMap.keySet()) {
@@ -223,12 +222,17 @@ public class Scanner {
 	 * @throws LexicalException se il token è in formato non corretto
 	 */
 	private Token scanOperators() throws LexicalException {
+		String op = "";
 		char c;
+		
 		c = readChar();
-		if (charTypeMap.containsKey(peekChar())) {
-			String op = "";
+		op += c;
+		while (charTypeMap.containsKey(peekChar())) {
+			c = readChar();
 			op += c;
-			op += readChar();
+			if (!op.matches("\\+=|-=|\\*=|/=")) {
+				throw new LexicalException(riga, op);
+			}
 			return new Token(TokenType.OP_ASSIGN, riga, op);
 		}
 		return new Token(charTypeMap.get(c), riga, Character.toString(c));
@@ -244,7 +248,7 @@ public class Scanner {
 		try {
 			return ((char) this.buffer.read());
 		} catch (IOException e) {
-			throw new LexicalException("Impossibile leggere carattere.");
+			throw new LexicalException(riga);
 		}
 	}
 
@@ -260,12 +264,12 @@ public class Scanner {
 		try {
 			c = (char) buffer.read();
 		} catch (IOException e) {
-			throw new LexicalException("Impossibile leggere carattere.");
+			throw new LexicalException(riga);
 		}
 		try {
 			buffer.unread(c);
 		} catch (IOException e) {
-			throw new LexicalException("Impossibile leggere carattere.");
+			throw new LexicalException(riga);
 		}
 		return c;
 	}
