@@ -6,20 +6,20 @@ import symboltable.SymbolTable;
 public class TypeCheckingVisitor implements IVisitor {
 
 	private TypeDescriptor resType; // mantiene il risultato della visita
-	private String log = "";
+	private String log;
+	private int riga;
 	
 	public TypeCheckingVisitor() {
 		SymbolTable.inizializza();
-	}
-	
-	public TypeDescriptor getResType() {
-		return resType;
+		log = "";
+		riga = 0;
 	}
 	
 	@Override
 	public void visit(NodeProgram node) {
 		for(NodeDecSt decSt : node.getDecSts()) {
 			decSt.accept(this);
+			riga++;
 		}
 	}
 
@@ -61,8 +61,8 @@ public class TypeCheckingVisitor implements IVisitor {
 		else if(exprTD.getTipo() == TipoTD.ERROR)
 			resType = exprTD;
 		else if(!exprTD.compatibile(idTD)) {
-			resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n");
-			log += resType.getMsg();
+			resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n", riga);
+			log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
 		}
 		else
 			resType = new TypeDescriptor(TipoTD.OK);
@@ -98,8 +98,8 @@ public class TypeCheckingVisitor implements IVisitor {
 			}	
 		}
 		else {
-			resType = new TypeDescriptor(TipoTD.ERROR, "Errore dichiarazione: " + node.getId().getName() + " già dichiarato.\n");
-			log += resType.getMsg();
+			resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " già dichiarato.\n", riga);
+			log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
 			return;
 		}
 		
@@ -114,8 +114,8 @@ public class TypeCheckingVisitor implements IVisitor {
 		SymbolTable.lookup(node.getId().getName());
 		if(idTD.getTipo() == TipoTD.INT) {
 			if(initTD.getTipo() == TipoTD.FLOAT) {
-				resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n");
-				log += resType.getMsg();
+				resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n", riga);
+				log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
 			}
 			else
 				resType = new TypeDescriptor(TipoTD.OK);
@@ -132,8 +132,8 @@ public class TypeCheckingVisitor implements IVisitor {
 	@Override
 	public void visit(NodeId node) {
 		if(SymbolTable.lookup(node.getName()) == null) {
-			resType = new TypeDescriptor(TipoTD.ERROR, "Errore ID: " + node.getName() + " non dichiarato.\n");
-			log += resType.getMsg();
+			resType = new TypeDescriptor(TipoTD.ERROR, node.getName() + " non dichiarato.\n", riga);
+			log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
 		}
 		else {
 			switch (SymbolTable.lookup(node.getName()).getTipo()) {
