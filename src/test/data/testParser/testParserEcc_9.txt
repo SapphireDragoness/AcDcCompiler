@@ -1,0 +1,5 @@
+int;
+print float;
+int i;
+i = 9;
+print i;

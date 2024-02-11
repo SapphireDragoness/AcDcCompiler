@@ -1,0 +1,4 @@
+int f;
+f = 34;
+float 34;
+print f;

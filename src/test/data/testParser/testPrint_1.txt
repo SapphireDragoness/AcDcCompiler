@@ -1,3 +1,2 @@
-print a;
-print floatt;
-print intt;
+temp = 1.0 / 6;
+print temp;

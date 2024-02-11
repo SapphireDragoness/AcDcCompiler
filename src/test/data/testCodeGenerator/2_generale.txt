@@ -1,0 +1,4 @@
+float a;
+a = 4.6;
+float b = a + 1.9;
+print b;

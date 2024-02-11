@@ -1,3 +1,4 @@
+int b;
+float b;
 int a;
-
 float a;
