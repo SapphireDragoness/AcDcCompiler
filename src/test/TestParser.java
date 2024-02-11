@@ -137,7 +137,7 @@ class TestParser {
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
 		assertEquals("Errore sintattico a riga 2: atteso ID, ma è SEMI", e.getMessage());
 		e = Assertions.assertThrows(SyntacticException.class, () -> parser.parse());
-		assertEquals("Errore sintattico a riga 2: atteso TYFLOAT, TYINT, ID, PRINT o EOF (panic mode: cercherò un ';'), ma è SEMI", e.getMessage());
+		assertEquals("Errore sintattico a riga 2: atteso TYFLOAT, TYINT, ID, PRINT o EOF (PANIC MODE: cercherò un ';'), ma è SEMI", e.getMessage());
 		Assertions.assertDoesNotThrow(() -> parser.parse());
 	}
 
@@ -150,8 +150,16 @@ class TestParser {
 	}
 
 	@Test
-	void testPrint() throws FileNotFoundException, SyntacticException {
-		scanner = new Scanner(path + "testPrint.txt");
+	void testPrint1() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner(path + "testPrint_1.txt");
+		parser = new Parser(scanner);
+
+		Assertions.assertDoesNotThrow(() -> parser.parse());
+	}
+	
+	@Test
+	void testPrint2() throws FileNotFoundException, SyntacticException {
+		scanner = new Scanner(path + "testPrint_2.txt");
 		parser = new Parser(scanner);
 
 		Assertions.assertDoesNotThrow(() -> parser.parse());

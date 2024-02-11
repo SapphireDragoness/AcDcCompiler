@@ -2,13 +2,8 @@ package test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.FileNotFoundException;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import scanner.LexicalException;
-import scanner.Scanner;
 import token.Token;
 import token.TokenType;
 
