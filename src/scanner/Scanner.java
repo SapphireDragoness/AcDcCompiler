@@ -103,6 +103,7 @@ public class Scanner {
 		 */
 		if (skipChars.contains(nextChar)) {
 			while (skipChars.contains(nextChar)) {
+				/* stato 1 */
 				if (nextChar == EOF) {
 					return new Token(TokenType.EOF, riga, "EOF");
 				}
@@ -167,56 +168,101 @@ public class Scanner {
 
 	/**
 	 * Scandisce un numero (intero o float) costruendo una stringa e ritornando il
-	 * token corrispondente.
+	 * token corrispondente. Segue l'automa a stati finiti riportato nelle slide.
 	 * 
 	 * @return il token corrispondente
 	 * @throws LexicalException se il numero è in formato non corretto
 	 */
 	private Token scanNumber() throws LexicalException {
 		String number = "";
-		char c;
 
-		while (!skipChars.contains(peekChar()) && !charTypeMap.containsKey(peekChar())) {
-			c = readChar();
-			number += c;
+		/* stato 7 */
+		if(peekChar() == '0') {
+			number += readChar();
+			if(!letters.contains(peekChar()) && !numbers.contains(peekChar()) && peekChar() != '.')
+				/* ritorna intero dallo stato 7 */
+				return new Token(TokenType.INT, riga, number);
+			/* stato 11 */
+			while(numbers.contains(peekChar()))
+				number += readChar();
+			/* ritorna errore dallo stato 11 */
+			if(peekChar() != '.') {
+				while(letters.contains(peekChar()))
+					/* consuma tutte le lettere e ritorna errore */
+					number += readChar();
+				throw new LexicalException(riga, number);
+			}		
 		}
-		if (number.matches("[0-9]+[.]([0-9]{0,5})")) {
-			return new Token(TokenType.FLOAT, riga, number);
-		} else if (number.matches("0|([1-9][0-9]*)")) {
-			return new Token(TokenType.INT, riga, number);
-		} else
+		else {
+			/* stato 2 */
+			while(numbers.contains(peekChar()))
+				number += readChar();		
+			/* stato 8 */
+			if(letters.contains(peekChar())) {
+				/* consuma tutte le lettere e ritorna errore */
+				while(letters.contains(peekChar()))
+					number += readChar();
+				throw new LexicalException(riga, number);
+			}
+			/* ritorna intero dallo stato 2 */
+			if(peekChar()!= '.')
+				return new Token(TokenType.INT, riga, number);
+		}
+		return scanFloat(number);
+	}
+	
+	private Token scanFloat(String number) throws LexicalException {
+		int decimali = 0;
+		
+		/* stato 5 */
+		number += readChar();
+		
+		/* stato 6 */
+		while(numbers.contains(peekChar()) && decimali < 5) {
+			decimali++;
+			number += readChar();
+		}
+		
+		/* stato 8 */
+		if(letters.contains(peekChar()) || numbers.contains(peekChar()) || peekChar() == '.') {
+			/* consuma tutte le lettere o cifre e ritorna errore */
+			while(letters.contains(peekChar()))
+				number += readChar();
 			throw new LexicalException(riga, number);
+		}
+		
+		/* ritorna float dallo stato 5 o 6 */
+		return new Token(TokenType.FLOAT, riga, number);
 	}
 
 	/**
-	 * Scandisce un id costruendo una stringa e ritornando il token corrispondente.
+	 * Scandisce un id costruendo una stringa e ritornando il token corrispondente. Segue l'automa a stati finiti riportato nelle slide.
 	 * 
 	 * @return il token corrispondente
 	 * @throws LexicalException se l'id è in formato non corretto
 	 */
 	private Token scanId() throws LexicalException {
 		String id = "";
-		char c;
 
-		while (!skipChars.contains(peekChar()) && !charTypeMap.containsKey(peekChar())) {
-			c = readChar();
-			id += c;
-		}
-		if (!id.matches("[a-z]+")) {
+		/* stato 3 */
+		while (letters.contains(peekChar())) 
+			id += readChar();
+		/* stato 8 */
+		if(numbers.contains(peekChar())) {
+			/* consuma tutte le cifre e ritorna errore */
+			while(numbers.contains(peekChar()))
+				id += readChar();
 			throw new LexicalException(riga, id);
 		}
-		if (keywordsMap.containsKey(id)) {
-			for (String kw : keywordsMap.keySet()) {
-				if (id.matches(kw)) {
-					return new Token(keywordsMap.get(kw), riga);
-				}
-			}
-		}
+		/* ritorna keyword dallo stato 3 */
+		if(keywordsMap.containsKey(id))
+			return new Token(keywordsMap.get(id), riga);
+		/* ritorna id dallo stato 3 */
 		return new Token(TokenType.ID, riga, id);
 	}
 
 	/**
-	 * Scandisce un operatore ritornando il token corrispondente.
+	 * Scandisce un operatore ritornando il token corrispondente. Segue l'automa a stati finiti riportato nelle slide.
 	 * 
 	 * @return il token corrispondente
 	 * @throws LexicalException se il token è in formato non corretto
@@ -225,16 +271,19 @@ public class Scanner {
 		String op = "";
 		char c;
 		
-		c = readChar();
+		c = readChar();	
+		/* stato 9 */
+		if(c == '=' || c == ';') {
+			/* ritorna operatore dallo stato 9 */
+			return new Token(charTypeMap.get(c), riga, Character.toString(c));
+		}
 		op += c;
-		while (charTypeMap.containsKey(peekChar())) {
-			c = readChar();
-			op += c;
-			if (!op.matches("\\+=|-=|\\*=|/=")) {
-				throw new LexicalException(riga, op);
-			}
+		/* stato 10 */
+		if(peekChar() == '=') {
+			op += readChar();
 			return new Token(TokenType.OP_ASSIGN, riga, op);
 		}
+		/* stato 4 */
 		return new Token(charTypeMap.get(c), riga, Character.toString(c));
 	}
 

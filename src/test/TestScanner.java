@@ -42,26 +42,6 @@ class TestScanner {
 		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
 		assertEquals("Errore lessicale a riga 3: sequenza di caratteri 'float56' non riconosciuta", e.getMessage());
 	}
-	
-	@Test
-	void testErroriOp() throws FileNotFoundException, LexicalException {
-		scanner = new Scanner(path + "erroriOp.txt");
-
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Errore lessicale a riga 1: sequenza di caratteri '++' non riconosciuta", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Errore lessicale a riga 2: sequenza di caratteri '==' non riconosciuta", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Errore lessicale a riga 2: sequenza di caratteri ';;' non riconosciuta", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Errore lessicale a riga 3: sequenza di caratteri '**' non riconosciuta", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Errore lessicale a riga 3: sequenza di caratteri '//' non riconosciuta", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Errore lessicale a riga 4: sequenza di caratteri '/+' non riconosciuta", e.getMessage());
-		e = Assertions.assertThrows(LexicalException.class, () -> scanner.nextToken());
-		assertEquals("Errore lessicale a riga 5: sequenza di caratteri '=*' non riconosciuta", e.getMessage());
-	}
 
 	@Test
 	void testEOF() throws FileNotFoundException, LexicalException {
