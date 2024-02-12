@@ -60,7 +60,7 @@ public class SymbolTable {
 		String str = "";
 		
 		for(var e : symbolTable.entrySet()) {
-			str += "Chiave: " + e.getKey() + ", Valore: " + e.getValue().getTipo() + "\n";
+			str += "ID: " + e.getKey() + ", Tipo: " + e.getValue().getTipo() + "\n";
 		}
 		return str;
 	}
