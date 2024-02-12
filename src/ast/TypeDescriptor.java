@@ -4,10 +4,12 @@ public class TypeDescriptor {
 
 	private TipoTD tipo;
 	private String msg;
+	private int riga;
 	
-	public TypeDescriptor(TipoTD tipo, String msg) {
+	public TypeDescriptor(TipoTD tipo, String msg, int riga) {
 		this.tipo = tipo;
 		this.msg = msg;
+		this.riga = riga;
 	}
 	
 	public TypeDescriptor(TipoTD tipo) {
@@ -20,6 +22,10 @@ public class TypeDescriptor {
 
 	public String getMsg() {
 		return msg;
+	}
+	
+	public int getRiga() {
+		return riga;
 	}
 
 	public boolean compatibile(TypeDescriptor tD) {

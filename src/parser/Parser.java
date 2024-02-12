@@ -66,7 +66,7 @@ public class Parser {
 		default -> {
 			match(TokenType.SEMI);
 			parse();
-			throw new SyntacticException(t.getRiga(), "TYFLOAT, TYINT, ID, PRINT o EOF (panic mode: cercherò un ';')", t.getTipo());
+			throw new SyntacticException(t.getRiga(), "TYFLOAT, TYINT, ID, PRINT o EOF (PANIC MODE: cercherò un ';')", t.getTipo());
 		}
 		}
 	}
