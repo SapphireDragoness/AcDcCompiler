@@ -111,7 +111,6 @@ public class TypeCheckingVisitor implements IVisitor {
 		node.getInit().accept(this);
 		TypeDescriptor initTD = resType;
 		
-		SymbolTable.lookup(node.getId().getName());
 		if(idTD.getTipo() == TipoTD.INT) {
 			if(initTD.getTipo() == TipoTD.FLOAT) {
 				resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n", riga);
