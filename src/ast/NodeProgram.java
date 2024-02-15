@@ -26,7 +26,7 @@ public class NodeProgram extends NodeAST {
 	/**
 	 * Restituisce la lista di dichiarazioni
 	 * 
-	 * @return
+	 * @return la lista di dichiarazioni
 	 */
 	public ArrayList<NodeDecSt> getDecSts() {
 		return decSts;

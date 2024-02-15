@@ -57,7 +57,7 @@ public class NodeBinOp extends NodeExpr {
 	 * Imposta l'espressione a sinistra di un'operatore in seguito a una
 	 * conversione.
 	 * 
-	 * @return il tipo di operatore
+	 * @param left l'espressione a sinistra
 	 */
 	public void setLeft(NodeExpr left) {
 		this.left = left;
@@ -66,7 +66,7 @@ public class NodeBinOp extends NodeExpr {
 	/**
 	 * Imposta l'espressione a destra dell'operatore in seguito a una conversione.
 	 * 
-	 * @return il tipo di operatore
+	 * @param right l'espressione a destra
 	 */
 	public void setRight(NodeExpr right) {
 		this.right = right;
