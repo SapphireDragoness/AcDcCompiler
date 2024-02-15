@@ -10,24 +10,24 @@ public class Token {
 	private int riga;
 	private TokenType tipo;
 	private String val;
-	
+
 	/**
 	 * Costruttore per Token.
 	 * 
 	 * @param tipo il tipo assegnato al Token
 	 * @param riga la riga assegnata al Token
-	 * @param val il valore assegnato al Token
+	 * @param val  il valore assegnato al Token
 	 */
 	public Token(TokenType tipo, int riga, String val) {
 		this.tipo = tipo;
 		this.riga = riga;
 		this.val = val;
 	}
-	
+
 	/**
 	 * Costruttore per Token.
 	 * 
-	 * @param il tipo assegnato al Token
+	 * @param tipo il tipo assegnato al Token
 	 * @param riga la riga assegnata al Token
 	 */
 	public Token(TokenType tipo, int riga) {
@@ -64,7 +64,8 @@ public class Token {
 
 	@Override
 	public String toString() {
-		if(getTipo() == TokenType.INT || getTipo() == TokenType.FLOAT || getTipo() == TokenType.ID || getTipo() == TokenType.OP_ASSIGN) {
+		if (getTipo() == TokenType.INT || getTipo() == TokenType.FLOAT || getTipo() == TokenType.ID
+				|| getTipo() == TokenType.OP_ASSIGN) {
 			return getTipo().toString() + ", riga: " + getRiga() + ", " + getVal();
 		}
 		return getTipo().toString() + ", riga: " + getRiga();
