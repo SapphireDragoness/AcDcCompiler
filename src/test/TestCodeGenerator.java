@@ -50,6 +50,18 @@ class TestCodeGenerator {
 		nP.accept(cgVisit);
 		
 		assertEquals(cgVisit.getLog(), "");
+		assertEquals(cgVisit.getCodiceGenerato(), "5 3 + sa la p P la 5 k 0.5 + sb 0 k lb 4 5 k / sb 0 k lb p P  lb 1 5 k - sc 0 k lc lb * sc lc p P");
+	}
+	
+	@Test
+	void testGenerale4() throws FileNotFoundException, SyntacticException {
+		NodeProgram nP = new Parser(new Scanner(path + "4_generale.txt")).parse();
+		var tcVisit = new TypeCheckingVisitor();
+		nP.accept(tcVisit);
+		var cgVisit = new CodeGeneratorVisitor();
+		nP.accept(cgVisit);
+		
+		assertEquals(cgVisit.getLog(), "");
 		assertEquals(cgVisit.getCodiceGenerato(), "3.5 1 5 k + sa 0 k  10 3 / sb la lb - sa la p P");
 	}
 	

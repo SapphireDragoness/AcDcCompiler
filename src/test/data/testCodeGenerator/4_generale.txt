@@ -1,0 +1,5 @@
+float f = 3.5 + 1;
+float v;
+v = 10 / 3;
+f -= v;
+print f;

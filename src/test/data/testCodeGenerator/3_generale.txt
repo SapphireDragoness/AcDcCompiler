@@ -1,5 +1,15 @@
-float f = 3.5 + 1;
-float v;
-v = 10 / 3;
-f -= v;
+int i;
+float f;
+# vediamo se funziona come dovrebbe...
+i = 5+3;
+# i dovrebbe essere 8
+print i;
+f = i + 0.5;
+f /= 4;
+# f dovrebbe essere 2.12500
 print f;
+float flo;
+flo = f - 1;
+flo *= f;
+print flo;
+# flo dovrebbe essere 2.39062
