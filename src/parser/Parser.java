@@ -10,8 +10,7 @@ import token.Token;
 import token.TokenType;
 
 /**
- * Questa classe implementa un parser che parsifica un file secondo la
- * grammatica ac.
+ * Implementa un parser che parsifica un file secondo la grammatica ac.
  * 
  * @author Linda Monfermoso, 20028464
  */
@@ -19,10 +18,21 @@ public class Parser {
 
 	private Scanner scanner;
 
+	/**
+	 * Costruttore della classe Parser.
+	 * 
+	 * @param scanner lo scanner da utilizzare
+	 */
 	public Parser(Scanner scanner) {
 		this.scanner = scanner;
 	}
 
+	/**
+	 * Inizia il parsing.
+	 * 
+	 * @return NodeProgram dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	public NodeProgram parse() throws SyntacticException {
 		return this.parsePrg();
 	}
@@ -46,6 +56,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa la regola: Prg -> DSs $
+	 * 
+	 * @return NodeProgram dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeProgram parsePrg() throws SyntacticException {
 		Token t = null;
 
@@ -66,11 +82,18 @@ public class Parser {
 		default -> {
 			match(TokenType.SEMI);
 			parse();
-			throw new SyntacticException(t.getRiga(), "TYFLOAT, TYINT, ID, PRINT o EOF (PANIC MODE: cercherò un ';')", t.getTipo());
+			throw new SyntacticException(t.getRiga(), "TYFLOAT, TYINT, ID, PRINT o EOF (PANIC MODE: cercherò un ';')",
+					t.getTipo());
 		}
 		}
 	}
 
+	/**
+	 * Implementa le regole: DSs -> Dcl DSs DSs -> Stm DSs DSs -> ϵ
+	 * 
+	 * @return lista di decSts
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private ArrayList<NodeDecSt> parseDSs() throws SyntacticException {
 		Token t;
 
@@ -105,6 +128,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa la regola: Dcl -> Ty id DclP
+	 * 
+	 * @return NodeDecl dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeDecl parseDcl() throws SyntacticException {
 		Token t;
 
@@ -128,6 +157,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: Ty -> float Ty -> int
+	 * 
+	 * @return il tipo del terminale
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private LangType parseTy() throws SyntacticException {
 		Token t;
 
@@ -154,6 +189,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: DclP -> ; DclP -> opAssign Exp ;
+	 * 
+	 * @return NodeExpr dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeExpr parseDclP() throws SyntacticException {
 		Token t;
 
@@ -182,6 +223,13 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: Stm -> id opAssign Exp ; Stm -> print id ; Stm -> print
+	 * id ;
+	 * 
+	 * @return NodeStm dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeStm parseStm() throws SyntacticException {
 		Token t;
 
@@ -219,6 +267,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: Exp -> Tr ExpP
+	 * 
+	 * @return NodeExpr dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeExpr parseExp() throws SyntacticException {
 		Token t;
 
@@ -241,6 +295,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: Exp -> + Tr ExpP Exp -> - Tr ExpP Exp -> ϵ
+	 * 
+	 * @return NodeExpr dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeExpr parseExpP(NodeExpr left) throws SyntacticException {
 		Token t;
 
@@ -275,6 +335,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: Tr -> Val TrP
+	 * 
+	 * @return NodeExpr dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeExpr parseTr() throws SyntacticException {
 		Token t;
 
@@ -297,6 +363,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: TrP -> * Val TrP TrP -> / Val TrP TrP -> ϵ
+	 * 
+	 * @return NodeExpr dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeExpr parseTrP(NodeExpr left) throws SyntacticException {
 		Token t;
 
@@ -331,6 +403,12 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Implementa le regole: Val -> intVal Val -> floatVal Val -> id
+	 * 
+	 * @return NodeExpr dell'AST
+	 * @throws SyntacticException se viene riscontrato un errore sintattico
+	 */
 	private NodeExpr parseVal() throws SyntacticException {
 		Token t;
 

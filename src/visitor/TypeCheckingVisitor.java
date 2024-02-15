@@ -3,21 +3,30 @@ package visitor;
 import ast.*;
 import symboltable.SymbolTable;
 
+/**
+ * Implementa il TypeCheckingVisitor, che svolge l'analisi semantica.
+ * 
+ * @author Linda Monfermoso, 20028464
+ */
 public class TypeCheckingVisitor implements IVisitor {
 
 	private TypeDescriptor resType; // mantiene il risultato della visita
 	private String log;
 	private int riga;
-	
+
+	/**
+	 * Costruttore per TypeCheckingVisitor, inizializza la SymbolTable e i campi
+	 * della classe.
+	 */
 	public TypeCheckingVisitor() {
 		SymbolTable.inizializza();
 		log = "";
 		riga = 0;
 	}
-	
+
 	@Override
 	public void visit(NodeProgram node) {
-		for(NodeDecSt decSt : node.getDecSts()) {
+		for (NodeDecSt decSt : node.getDecSts()) {
 			decSt.accept(this);
 			riga++;
 		}
@@ -29,20 +38,19 @@ public class TypeCheckingVisitor implements IVisitor {
 		TypeDescriptor leftTD = resType;
 		node.getRight().accept(this);
 		TypeDescriptor rightTD = resType;
-		
-		if(leftTD.getTipo() == TipoTD.ERROR) 
+
+		if (leftTD.getTipo() == TipoTD.ERROR)
 			resType = leftTD;
-		else if(rightTD.getTipo() == TipoTD.ERROR)
+		else if (rightTD.getTipo() == TipoTD.ERROR)
 			resType = rightTD;
-		else if(leftTD.getTipo() != rightTD.getTipo()) {
-			if(leftTD.getTipo() == TipoTD.INT)
+		else if (leftTD.getTipo() != rightTD.getTipo()) {
+			if (leftTD.getTipo() == TipoTD.INT)
 				node.setLeft(new NodeConvert(node.getLeft()));
 			else
 				node.setRight(new NodeConvert(node.getRight()));
 			resType = new TypeDescriptor(TipoTD.FLOAT);
-		}
-		else {
-			if(leftTD.getTipo() == TipoTD.FLOAT)
+		} else {
+			if (leftTD.getTipo() == TipoTD.FLOAT)
 				resType = new TypeDescriptor(TipoTD.FLOAT);
 			else
 				resType = new TypeDescriptor(TipoTD.INT);
@@ -55,37 +63,39 @@ public class TypeCheckingVisitor implements IVisitor {
 		TypeDescriptor idTD = resType;
 		node.getExpr().accept(this);
 		TypeDescriptor exprTD = resType;
-		
-		if(idTD.getTipo() == TipoTD.ERROR)
+
+		if (idTD.getTipo() == TipoTD.ERROR)
 			resType = idTD;
-		else if(exprTD.getTipo() == TipoTD.ERROR)
+		else if (exprTD.getTipo() == TipoTD.ERROR)
 			resType = exprTD;
-		else if(!exprTD.compatibile(idTD)) {
-			resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n", riga);
+		else if (!exprTD.compatibile(idTD)) {
+			resType = new TypeDescriptor(TipoTD.ERROR,
+					node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n",
+					riga);
 			log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
-		}
-		else
+		} else
 			resType = new TypeDescriptor(TipoTD.OK);
 	}
 
 	@Override
 	public void visit(NodeConst node) {
-		switch(node.getType()) {
-			case FLOAT -> {
-				resType = new TypeDescriptor(TipoTD.FLOAT);
-			}
-			case INT -> {
-				resType = new TypeDescriptor(TipoTD.INT);
-			}
+		switch (node.getType()) {
+		case FLOAT -> {
+			resType = new TypeDescriptor(TipoTD.FLOAT);
+		}
+		case INT -> {
+			resType = new TypeDescriptor(TipoTD.INT);
+		}
 		}
 	}
 
 	@Override
 	public void visit(NodeDecl node) {
 		TypeDescriptor idTD;
-		
-		if(SymbolTable.enter(node.getId().getName(), new SymbolTable.Attributes(node.getType(), node.getId().getName()))) {
-			switch(node.getType()) {
+
+		if (SymbolTable.enter(node.getId().getName(),
+				new SymbolTable.Attributes(node.getType(), node.getId().getName()))) {
+			switch (node.getType()) {
 			case FLOAT -> {
 				idTD = new TypeDescriptor(TipoTD.FLOAT);
 			}
@@ -95,31 +105,29 @@ public class TypeCheckingVisitor implements IVisitor {
 			default -> {
 				idTD = new TypeDescriptor(TipoTD.ERROR);
 			}
-			}	
-		}
-		else {
+			}
+		} else {
 			resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " già dichiarato.\n", riga);
 			log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
 			return;
 		}
-		
-		if(node.getInit() == null) {
+
+		if (node.getInit() == null) {
 			resType = new TypeDescriptor(TipoTD.OK);
 			return;
 		}
-		
+
 		node.getInit().accept(this);
 		TypeDescriptor initTD = resType;
-		
-		if(idTD.getTipo() == TipoTD.INT) {
-			if(initTD.getTipo() == TipoTD.FLOAT) {
-				resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName() + " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n", riga);
+
+		if (idTD.getTipo() == TipoTD.INT) {
+			if (initTD.getTipo() == TipoTD.FLOAT) {
+				resType = new TypeDescriptor(TipoTD.ERROR, node.getId().getName()
+						+ " è di tipo INT, impossibile assegnargli un'espressione di tipo FLOAT.\n", riga);
 				log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
-			}
-			else
+			} else
 				resType = new TypeDescriptor(TipoTD.OK);
-		}
-		else 
+		} else
 			resType = new TypeDescriptor(TipoTD.OK);
 	}
 
@@ -130,37 +138,42 @@ public class TypeCheckingVisitor implements IVisitor {
 
 	@Override
 	public void visit(NodeId node) {
-		if(SymbolTable.lookup(node.getName()) == null) {
+		if (SymbolTable.lookup(node.getName()) == null) {
 			resType = new TypeDescriptor(TipoTD.ERROR, node.getName() + " non dichiarato.\n", riga);
 			log += "Errore semantico a riga " + resType.getRiga() + ": " + resType.getMsg();
-		}
-		else {
+		} else {
 			switch (SymbolTable.lookup(node.getName()).getTipo()) {
 			case INT -> {
 				resType = new TypeDescriptor(TipoTD.INT);
 			}
-			case FLOAT ->{
+			case FLOAT -> {
 				resType = new TypeDescriptor(TipoTD.FLOAT);
 			}
-		}
+			}
 		}
 	}
 
 	@Override
 	public void visit(NodePrint node) {
 		node.getId().accept(this);
-		
-		if(resType.getTipo() != TipoTD.ERROR)
+
+		if (resType.getTipo() != TipoTD.ERROR)
 			resType = new TypeDescriptor(TipoTD.OK);
 	}
 
 	@Override
 	public void visit(NodeConvert node) {
+		/* converte il tipo da INT a FLOAT */
 		resType = new TypeDescriptor(TipoTD.FLOAT);
 	}
-	
+
+	/**
+	 * Restituisce il log ottenuto dalla visita.
+	 * 
+	 * @return il log della visita
+	 */
 	public String getLog() {
 		return log;
 	}
-	
+
 }

@@ -1,5 +1,8 @@
 package token;
 
+/**
+ * Enum per i tipi dei token.
+ */
 public enum TokenType {
 	INT,
 	FLOAT,
