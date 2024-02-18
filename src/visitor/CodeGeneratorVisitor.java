@@ -141,6 +141,7 @@ public class CodeGeneratorVisitor implements IVisitor {
 	@Override
 	public void visit(NodeConvert node) {
 		node.getNodeExpr().accept(this);
+		/* la conversione a float richiede l'impostazione della precisione a 5 */
 		codiceDc += " 5 k";
 	}
 
